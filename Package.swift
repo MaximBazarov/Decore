@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         .package(name: "DecoreStorage",
                  url: "git@github.com:MaximBazarov/DecoreStorage.git",
-                 .exactItem("0.1.0"))
+                 .exact(Version("0.1.0"))
 
     ],
     targets: [
