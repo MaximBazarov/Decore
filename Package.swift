@@ -19,6 +19,7 @@ let package = Package(
         .package(name: "DecoreStorage",
                  url: "git@github.com:MaximBazarov/DecoreStorage.git",
                  .exact(Version("0.1.0"))
+        )
 
     ],
     targets: [
