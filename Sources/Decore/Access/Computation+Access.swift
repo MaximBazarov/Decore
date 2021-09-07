@@ -1,5 +1,3 @@
-import DecoreStorage
-
 // MARK: - StateOf -
 public extension StateOf where C: Computation {
 

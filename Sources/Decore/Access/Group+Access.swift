@@ -1,14 +1,13 @@
-import DecoreStorage
-
 // MARK: - StateOf -
-public extension StateOf where C: Atom {
+public extension StateOf where C: Group {
 
     convenience init(
         file: String = #file,
         line: Int = #line,
         column: Int = #column,
         function: String = #function,
-        _ atom: C.Type,
+        _ group: C.Type,
+        at id: C.ID,
         onChange: @escaping ( () -> C.Value ) -> Void = { _ in }
     ) {
         self.init(
@@ -17,9 +16,9 @@ public extension StateOf where C: Atom {
                 line: line,
                 column: column,
                 function: function,
-                container: atom.key),
+                container: group.key(at: id)),
             read: { read in
-                read(atom)
+                read(group, at: id)
             },
             onChange: onChange
         )
@@ -28,14 +27,15 @@ public extension StateOf where C: Atom {
 }
 
 // MARK: - BindingTo -
-public extension BindingTo where C: Atom {
+public extension BindingTo where C: Group {
 
     convenience init(
         file: String = #file,
         line: Int = #line,
         column: Int = #column,
         function: String = #function,
-        _ atom: C.Type,
+        _ group: C.Type,
+        at id: C.ID,
         onChange: @escaping ( () -> C.Value ) -> Void = { _ in }
     ) {
         self.init(
@@ -44,15 +44,16 @@ public extension BindingTo where C: Atom {
                 line: line,
                 column: column,
                 function: function,
-                container: atom.key),
+                container: group.key(at: id)),
             read: { read in
-                read(atom)
+                read(group, at: id)
             },
             write: { write, value in
-                write(value, for: atom)
+                write(value, for: group, at: id)
             },
             onChange: onChange
         )
+
     }
 
 }
