@@ -15,7 +15,7 @@ public struct Reader {
     // functions `callAsFunction(T)` are defined in concrete types e.g. Atom, as extensions.
 
     /// Returns the value from storage for given ```Atom``
-    func callAsFunction<A: Atom>(_ atom: A.Type) -> A.Value {
+    public func callAsFunction<A: Atom>(_ atom: A.Type) -> A.Value {
         storage.read(
             atom.key,
             context: context,
@@ -25,7 +25,7 @@ public struct Reader {
     }
     
     /// Returns the computed value for a given ```Computation``
-    func callAsFunction<C: Computation>(_ computation: C.Type) -> C.Value {
+    public func callAsFunction<C: Computation>(_ computation: C.Type) -> C.Value {
         storage.read(
             C.key,
             context: context,
@@ -36,7 +36,7 @@ public struct Reader {
     }
 
     /// Returns the value from storage for a given ```Derived``
-    func callAsFunction<D: Derived>(_ derived: D.Type) -> D.Value {
+    public func callAsFunction<D: Derived>(_ derived: D.Type) -> D.Value {
         storage.read(
             derived.key,
             context: context,
@@ -46,7 +46,7 @@ public struct Reader {
     }
 
     /// Returns the value from storage for an item of given ``Group`` at id.
-    func callAsFunction<G: Group>(_ table: G.Type, at id: G.ID) -> G.Value {
+    public func callAsFunction<G: Group>(_ table: G.Type, at id: G.ID) -> G.Value {
         storage.read(
             G.key(at: id),
             context: context,

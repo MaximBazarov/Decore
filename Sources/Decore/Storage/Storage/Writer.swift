@@ -11,7 +11,7 @@ public struct Writer {
     }
 
     /// Writes the value into storage for given ```Atom``
-    func callAsFunction<A: Atom>(
+    public func callAsFunction<A: Atom>(
         _ value: A.Value,
         for atom: A.Type,
         file: String = #file,
@@ -31,7 +31,7 @@ public struct Writer {
     }
     
     /// Writes the value into storage an item of given ``Group`` at id.
-    func callAsFunction<G: Group>(_ value: G.Value, for table: G.Type, at id: G.ID) {
+    public func callAsFunction<G: Group>(_ value: G.Value, for table: G.Type, at id: G.ID) {
         storage.write(
             value,
             into: G.key(at: id),
@@ -39,7 +39,7 @@ public struct Writer {
     }
 
     /// Writes the value into storage for given ```Atom``
-    func callAsFunction<D: Derived & Mutable>(_ value: D.Value, for derived: D.Type){
+    public func callAsFunction<D: Derived & Mutable>(_ value: D.Value, for derived: D.Type){
         derived.setValue(value, write: self)
     }
 
