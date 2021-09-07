@@ -1,15 +1,12 @@
-import DecoreStorage
-
 // MARK: - StateOf -
-public extension StateOf where C: Group {
+public extension StateOf where C: Derived {
 
     convenience init(
         file: String = #file,
         line: Int = #line,
         column: Int = #column,
         function: String = #function,
-        _ group: C.Type,
-        at id: C.ID,
+        _ derived: C.Type,
         onChange: @escaping ( () -> C.Value ) -> Void = { _ in }
     ) {
         self.init(
@@ -18,9 +15,9 @@ public extension StateOf where C: Group {
                 line: line,
                 column: column,
                 function: function,
-                container: group.key(at: id)),
+                container: derived.key),
             read: { read in
-                read(group, at: id)
+                read(derived)
             },
             onChange: onChange
         )
@@ -29,15 +26,14 @@ public extension StateOf where C: Group {
 }
 
 // MARK: - BindingTo -
-public extension BindingTo where C: Group {
+public extension BindingTo where C: Derived {
 
     convenience init(
         file: String = #file,
         line: Int = #line,
         column: Int = #column,
         function: String = #function,
-        _ group: C.Type,
-        at id: C.ID,
+        _ derived: C.Type,
         onChange: @escaping ( () -> C.Value ) -> Void = { _ in }
     ) {
         self.init(
@@ -46,16 +42,15 @@ public extension BindingTo where C: Group {
                 line: line,
                 column: column,
                 function: function,
-                container: group.key(at: id)),
+                container: derived.key),
             read: { read in
-                read(group, at: id)
+                read(derived)
             },
             write: { write, value in
-                write(value, for: group, at: id)
+                write(value, for: derived)
             },
             onChange: onChange
         )
-
     }
 
 }

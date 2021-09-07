@@ -1,6 +1,5 @@
 import XCTest
 import Decore
-import DecoreStorage
 
 final class ComputationTests: XCTestCase {
 

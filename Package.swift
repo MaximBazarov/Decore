@@ -15,19 +15,13 @@ let package = Package(
             name: "Decore",
             targets: ["Decore"]),
     ],
-    dependencies: [
-        .package(name: "DecoreStorage",
-                 url: "git@github.com:MaximBazarov/DecoreStorage.git",
-                 .exact(Version("0.1.0"))
-        )
-
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Decore",
-            dependencies: ["DecoreStorage"]),
+            dependencies: []),
         .testTarget(
             name: "DecoreTests",
-            dependencies: ["Decore", "DecoreStorage"]),
+            dependencies: ["Decore"]),
     ]
 )
