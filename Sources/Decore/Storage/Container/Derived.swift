@@ -33,29 +33,3 @@ public extension Derived {
     }
 
 }
-
-
-// MARK: - Reader -
-public extension Reader {
-
-    /// Returns the value from storage for a given ```Derived``
-    func callAsFunction<D: Derived>(_ derived: D.Type) -> D.Value {
-        storage.read(
-            derived.key,
-            context: context,
-            fallbackValue: { D.value(self) },
-            observation: observation
-        )
-    }
-}
-
-
-// MARK: - Writer -
-public extension Writer {
-
-    /// Writes the value into storage for given ```Atom``
-    func callAsFunction<D: Derived & Mutable>(_ value: D.Value, for derived: D.Type){
-        derived.setValue(value, write: self)
-    }
-}
-

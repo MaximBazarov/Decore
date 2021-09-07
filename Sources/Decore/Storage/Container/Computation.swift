@@ -25,20 +25,3 @@ public extension Computation {
     }
 
 }
-
-
-// MARK: - Reader -
-public extension Reader {
-
-    /// Returns the computed value for a given ```Computation``
-    func callAsFunction<C: Computation>(_ computation: C.Type) -> C.Value {
-        storage.read(
-            C.key,
-            context: context,
-            fallbackValue: { C.value(self) },
-            observation: observation,
-            cachingEnabled: false
-        )
-    }
-}
-

@@ -34,31 +34,3 @@ public extension Group where Self: Mutable {
     }
 }
 
-
-
-// MARK: - Reader -
-public extension Reader {
-    
-    /// Returns the value from storage for an item of given ``Group`` at id.
-    func callAsFunction<G: Group>(_ table: G.Type, at id: G.ID) -> G.Value {
-        storage.read(
-            G.key(at: id),
-            context: context,
-            fallbackValue: { G.initial(for: id) },
-            observation: observation
-        )
-    }
-}
-
-// MARK: - Writer -
-public extension Writer {
-    
-    /// Writes the value into storage an item of given ``Group`` at id.
-    func callAsFunction<G: Group>(_ value: G.Value, for table: G.Type, at id: G.ID) {
-        storage.write(
-            value,
-            into: G.key(at: id),
-            context: context)
-    }
-}
-
