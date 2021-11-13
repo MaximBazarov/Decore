@@ -1,11 +1,5 @@
-// MARK: - Container
-
 /// Container is a wrapper for the value that allows it to be stored in the ``Storage``
-public protocol Container {
-
-    /// Type of the value stored in container.
-    associatedtype Value
-
+public protocol Container: ValueContainer {
 
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
@@ -19,6 +13,9 @@ public protocol Container {
     static func key() -> Storage.Key
 }
 
+
+// MARK: - Key Defaut Implementation
+
 public extension Container {
 
     /// Default implementation generates the ``Storage.Key`` from the type name
@@ -29,26 +26,41 @@ public extension Container {
 }
 
 
-// MARK: - Container Group
+// MARK: - Storage Read/Write/Observe
 
+extension Storage {
 
-
-// MARK: - Derivatives
-
-
-public struct Reader {
-
-    public func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
-        fatalError()
+    /// Writes s given ``ValueContainer/Value`` into a ``Container`` storage.
+    func write<C: Container>(
+        _ value: C.Value,
+        into container: C.Type
+    ) {
+        let destination = C.key()
+        update(container, value: value, atKey: destination)
     }
 
-    public func callAsFunction<C: Computation>(_ container: C.Type) -> C.Value {
-        fatalError()
-    }
-    public func callAsFunction<C: ContainerGroup>(
-        _ container: C.Type,
-        at id: C.ID
+
+    func readValue<C: Container>(
+        of container: C.Type,
+        key destination: Key,
+        initial: () -> C.Value
     ) -> C.Value {
-        fatalError()
+        if let value = storage[destination] as? C.Value {
+            return value
+        }
+
+        let newValue = initial()
+        update(container, value: newValue, atKey: destination)
+        return newValue
+    }
+
+    func observe<C: Container>(
+        container: C.Type,
+        observation: Observation
+    ) -> C.Value {
+        let destination = C.key()
+        insertObservation(observation, for: destination)
+        let value = readValue(of: container, key: destination, initial: C.value)
+        return value
     }
 }

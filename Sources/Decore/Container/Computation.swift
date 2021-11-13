@@ -29,3 +29,21 @@ extension Computation {
     static func value() -> Value { value(read: Reader()) }
     static func shouldStoreComputedValue() -> Bool { true }
 }
+
+
+public struct Reader {
+
+    public func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
+        fatalError()
+    }
+
+    public func callAsFunction<C: Computation>(_ container: C.Type) -> C.Value {
+        fatalError()
+    }
+    public func callAsFunction<C: ContainerGroup>(
+        _ container: C.Type,
+        at id: C.ID
+    ) -> C.Value {
+        fatalError()
+    }
+}

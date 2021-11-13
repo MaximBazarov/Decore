@@ -1,8 +1,6 @@
-/// Container Group is the ``Container`` for the same type Containers distinguished by their ``ID``.
-///
-/// **Usage:**
-/// TBD
-public protocol ContainerGroup: Container {
+/// Container Group is the group of ``ValueContainer``
+/// that share the same ``ValueContainer/Value`` type and distinguished by ``ID``.
+public protocol ContainerGroup: ValueContainer {
 
     /// Unique identifier in addition to the group type name.
     associatedtype ID: Hashable
@@ -12,20 +10,33 @@ public protocol ContainerGroup: Container {
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
     /// - Returns: ``Value``
-    static func value(_ id: ID) -> Value
+    static func value(for id: ID) -> Value
 
     /// Must return a unique key to store the value in the storage
     /// using a given ``ID``.
     ///
     /// - Returns: ``Storage/Key``
-    static func key(_ id: ID) -> Storage.Key
+    static func key(for id: ID) -> Storage.Key
 }
 
 public extension ContainerGroup {
     /// Default implementation generates the ``Storage.Key`` from the type name
     /// of the conforming ``ContainerGroup`` adding the element id.
-    static func key(_ id: ID) -> Storage.Key {
+    static func key(for id: ID) -> Storage.Key {
         .group(String(describing: Self.self), container: id)
     }
+}
+
+extension Storage {
+
+    func write<C: ContainerGroup>(
+        _ value: C.Value,
+        into containerGroup: C.Type,
+        at id: C.ID
+    ) {
+        let destination = C.key(for: id)
+        update(containerGroup, value: value, atKey: destination)
+    }
+
 }
 
