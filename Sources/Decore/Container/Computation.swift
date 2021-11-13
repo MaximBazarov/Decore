@@ -1,27 +1,31 @@
+/// TBD
+public protocol ComputationConfiguration {
 
-
-/// Computation is a container for the ``Value`` that is never stored in the ``Storage``.
-/// It gets invalidated every time one of it's dependencies changed.
-///
-/// **Usage:**
-/// ```swift
-/// struct SelectedItem: Computation {
-///     static var value = { read in
-///         let id = read(SelectedItemID)
-///         read(Items, at: id)
-///     }
-/// }
-/// ```
-public protocol Computation: Container {
-    associatedtype Value
-
-    static var value: (Reader) -> Value { get }
+    /// Called to decide whether to write the value into the ``Storage`` or not.
+    /// Return true to write value into the ``Storage``
+    static func shouldStoreComputedValue() -> Bool
 }
 
-public extension Computation {
+/// Computation is the ``Container`` that calculates a value
+/// depending on the other values in the storage that ``Computation`` reads during computation.
+/// if ``Computation/shouldStoreComputedValue()-2c6d5`` returns true,
+/// the computed value will be written into the ``Storage``.
+/// By default it returns `true`.
+///
+/// **Usage:**
+/// TBD
+public protocol Computation: ComputationConfiguration, Container {
+    /// Called when when computation value is read
+    /// and there is no valid value in the ``Storage``.
+    ///
+    /// `shouldStoreComputedValue()`: Defines whether a computed value
+    /// should be written into the ``Storage``
+    ///
+    /// - Returns: ``Value``
+    static func value(read: Reader) -> Value
+}
 
-    static var key: Storage.Key {
-        .computation(String(describing: Self.self))
-    }
-
+extension Computation {
+    static func value() -> Value { value(read: Reader()) }
+    static func shouldStoreComputedValue() -> Bool { true }
 }
