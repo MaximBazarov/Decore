@@ -26,7 +26,7 @@ public protocol Computation: ComputationConfiguration, Container {
 }
 
 extension Computation {
-    static func value() -> Value { value(read: Reader()) }
+    static func initialValue() -> Value { value(read: Reader()) }
     static func shouldStoreComputedValue() -> Bool { true }
 }
 

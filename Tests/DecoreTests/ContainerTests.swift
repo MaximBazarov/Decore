@@ -6,7 +6,7 @@ final class ContainerTests: XCTestCase {
 
     struct TestContainer: Container {
         typealias Value = Int
-        static func value() -> Value { 1 }
+        static func initialValue() -> Value { 1 }
     }
 
     func test_writeContainerValue_valueShouldBeWrittenIntoStorage() throws {

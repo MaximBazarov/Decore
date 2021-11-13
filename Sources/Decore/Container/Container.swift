@@ -1,11 +1,14 @@
-/// Container is a wrapper for the value that allows it to be stored in the ``Storage``
+/// Container is a wrapper for the ``ValueContainer/Value``.
+/// Storage can read, write and observe the value using a unique key
+/// returned by ``key()-9gare`` function.
+///
 public protocol Container: ValueContainer {
 
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
     /// - Returns: ``Value``
-    static func value() -> Value
+    static func initialValue() -> Value
 
 
     /// Must return a unique key to store the value in the storage.
@@ -60,7 +63,7 @@ extension Storage {
     ) -> C.Value {
         let destination = C.key()
         insertObservation(observation, for: destination)
-        let value = readValue(of: container, key: destination, initial: C.value)
+        let value = readValue(of: container, key: destination, initial: C.initialValue)
         return value
     }
 }
