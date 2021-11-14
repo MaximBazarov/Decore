@@ -13,6 +13,9 @@ public final class Storage {
     /// Raw storage with all the ``Container``s
     var storage: [AnyHashable: Any] = [:]
 
+    /// TBD
+    var dependencies: [Key: [Key]] = [:]
+
     /// Raw storage with all the ``Observation``s
     var observations: [Storage.Key: ObservationStorage] = [:]
 
@@ -27,24 +30,22 @@ public final class Storage {
         observations[container] = observationStorage
     }
 
-    func update<C: ValueContainer>(
-        _ container: C.Type,
-        value: C.Value,
-        atKey destination: Key
-    ) {
-        willChangeValue(destination)
-        invalidateValue(at: destination)
-        if shouldWriteValue(of: container) {
-            storage[destination] = value
-        }
-        didChangeValue(destination)
+    func insertDependency(_ depender: Key, for key: Key) {
+        var dependencies = self.dependencies[key] ?? []
+        dependencies.append(depender)
+        self.dependencies[key] = dependencies
     }
 
-    private func shouldWriteValue<C: ValueContainer>(of container: C.Type) -> Bool {
-        if let computation = container.self as? ComputationConfiguration.Type {
-            return computation.shouldStoreComputedValue()
-        }
-        return true
+    func readValue(at destination: Key) -> Any? {
+        let value = storage[destination]
+        return value
+    }
+
+    func update(value: Any, atKey destination: Key) {
+        willChangeValue(destination)
+        invalidateValue(at: destination)
+        storage[destination] = value
+        didChangeValue(destination)
     }
 
     private func invalidateValue(at key: Storage.Key) {

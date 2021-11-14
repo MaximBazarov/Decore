@@ -39,31 +39,30 @@ extension Storage {
         into container: C.Type
     ) {
         let destination = C.key()
-        update(container, value: value, atKey: destination)
-    }
-
-
-    func readValue<C: Container>(
-        of container: C.Type,
-        key destination: Key,
-        initial: () -> C.Value
-    ) -> C.Value {
-        if let value = storage[destination] as? C.Value {
-            return value
-        }
-
-        let newValue = initial()
-        update(container, value: newValue, atKey: destination)
-        return newValue
+        update(value: value, atKey: destination)
     }
 
     func observe<C: Container>(
         container: C.Type,
         observation: Observation
     ) -> C.Value {
-        let destination = C.key()
+        let destination = container.key()
+        let read = Reader(storage: self)
         insertObservation(observation, for: destination)
-        let value = readValue(of: container, key: destination, initial: C.initialValue)
+        return read(container)
+    }
+}
+
+public extension Storage.Reader {
+
+    func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
+        let destination = container.key()
+        guard let value = self.read(key: destination) as? C.Value else {
+            let newValue = container.initialValue()
+            storage.update(value: newValue, atKey: destination)
+            return newValue
+        }
         return value
     }
+
 }

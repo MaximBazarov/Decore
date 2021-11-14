@@ -1,11 +1,3 @@
-/// TBD
-public protocol ComputationConfiguration {
-
-    /// Called to decide whether to write the value into the ``Storage`` or not.
-    /// Return true to write value into the ``Storage``
-    static func shouldStoreComputedValue() -> Bool
-}
-
 /// Computation is the ``Container`` that calculates a value
 /// depending on the other values in the storage that ``Computation`` reads during computation.
 /// if ``Computation/shouldStoreComputedValue()-2c6d5`` returns true,
@@ -14,7 +6,12 @@ public protocol ComputationConfiguration {
 ///
 /// **Usage:**
 /// TBD
-public protocol Computation: ComputationConfiguration, Container {
+public protocol Computation: ValueContainer {
+
+    /// Called to decide whether to write the value into the ``Storage`` or not.
+    /// Return true to write value into the ``Storage``
+    static func shouldStoreComputedValue() -> Bool
+
     /// Called when when computation value is read
     /// and there is no valid value in the ``Storage``.
     ///
@@ -22,28 +19,51 @@ public protocol Computation: ComputationConfiguration, Container {
     /// should be written into the ``Storage``
     ///
     /// - Returns: ``Value``
-    static func value(read: Reader) -> Value
+    static func value(read: Storage.Reader) -> Value
+
+    /// Must return a unique key to store the value in the storage.
+    /// - Returns: ``Storage/Key``
+    static func key() -> Storage.Key
 }
 
+
+// MARK: - Key Defaut Implementation
+
+public extension Computation {
+    /// Default implementation generates the ``Storage.Key`` from the type name
+    /// of the conforming ``Container`` .
+    static func key() -> Storage.Key {
+        .container(String(describing: Self.self))
+    }
+}
 extension Computation {
-    static func initialValue() -> Value { value(read: Reader()) }
     static func shouldStoreComputedValue() -> Bool { true }
 }
 
 
-public struct Reader {
+// MARK: - Storage Reader
 
-    public func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
-        fatalError()
-    }
+public extension Storage.Reader {
 
-    public func callAsFunction<C: Computation>(_ container: C.Type) -> C.Value {
-        fatalError()
-    }
-    public func callAsFunction<C: ContainerGroup>(
-        _ container: C.Type,
-        at id: C.ID
-    ) -> C.Value {
-        fatalError()
-    }
+//    func callAsFunction<C: Computation>(_ computation: C.Type, from owner: Storage.Key? == nil) -> C.Value {
+//        let destination = container.key()
+//        let selfKey =
+//
+//        var computedValue: C.Value {
+//            let newValue = computation.value(read: self)
+//            return newValue
+//        }
+//
+//        if computation.shouldStoreComputedValue() {
+//            guard let storedValue = self.read(key: destination) as? C.Value else {
+//                let newValue = computedValue
+//                update(container, value: newValue, atKey: container.key())
+//                return newValue
+//            }
+//            return storedValue
+//        } else {
+//            return computedValue
+//        }
+//    }
 }
+
