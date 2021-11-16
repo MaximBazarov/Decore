@@ -11,7 +11,7 @@ import Foundation
 /// let sceneStorage = Warehouse[.storage(uniqueStorageID)]
 /// ```
 ///
-final class Warehouse {
+public final class Warehouse {
 
     /// Storage unique identifier.
     public enum Key: Hashable {
@@ -23,12 +23,17 @@ final class Warehouse {
     }
 
     public static subscript(_ key: Key) -> Storage {
-        guard let storageForKey = warehouse[key] else {
-            let newStorage = Storage()
-            warehouse[key] = newStorage
-            return newStorage
+        get {
+            guard let storageForKey = warehouse[key] else {
+                let newStorage = Storage()
+                warehouse[key] = newStorage
+                return newStorage
+            }
+            return storageForKey
         }
-        return storageForKey
+        set {
+            warehouse[key] = newValue
+        }
     }
 
 

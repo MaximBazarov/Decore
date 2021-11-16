@@ -6,7 +6,7 @@
 ///
 /// **Usage:**
 /// TBD
-public protocol Computation: ValueContainer {
+public protocol Computation: KeyedContainer {
 
     /// Called to decide whether to write the value into the ``Storage`` or not.
     /// Return true to write value into the ``Storage``
@@ -45,7 +45,6 @@ extension Computation {
 
 public extension Storage.Reader {
 
-//    func callAsFunction<C: Computation>(_ computation: C.Type, from owner: Storage.Key? == nil) -> C.Value {
 //        let destination = container.key()
 //        let selfKey =
 //

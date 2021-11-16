@@ -41,7 +41,7 @@ public final class Storage {
         return value
     }
 
-    func update(value: Any, atKey destination: Key) {
+    public func update(value: Any, atKey destination: Key) {
         willChangeValue(destination)
         invalidateValue(at: destination)
         storage[destination] = value

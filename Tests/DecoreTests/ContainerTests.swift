@@ -21,36 +21,11 @@ final class ContainerTests: XCTestCase {
 
     func test_Reader_callAsFunction_shouldReturnWrittenValue() throws {
         let storage = Storage()
-        storage.write(7, into: TestContainer.self)
+        let container = TestContainer.self
+        storage.write(7, into: container)
         let read = Storage.Reader(storage: storage)
-        let result = read(TestContainer.self)
+        let result = read(container)
         XCTAssertEqual(result, 7)
     }
 
-    func test_Reader_callAsFunction_shouldAddDependency() throws {
-        let storage = Storage()
-        let destination = TestContainer.key()
-        storage.update(value: 7, atKey: destination)
-        let owner = Storage.Key.container("test")
-        let read = Storage.Reader(storage: storage, owner: owner)
-        let _ = read(TestContainer.self)
-        let dependencies = storage
-            .dependencies[destination] ?? []
-
-        XCTAssertNotNil(dependencies.count == 1)
-        let dependency = try XCTUnwrap(dependencies.first)
-        XCTAssertTrue(dependency == owner)
-    }
-
-    func test_Observe_writeNewValue_shouldPublishValueChange() throws {
-
-        @Observe(TestContainer.self) var testValue
-
-        let storage = Storage()
-        let destination = TestContainer.key()
-
-        storage.update(value: 7, atKey: destination)
-        XCTAssertEqual(testValue, 7)
-
-    }
 }

@@ -24,9 +24,21 @@ public extension Storage {
         /// - Parameters:
         ///   - storage: ``Storage`` to read from
         ///   - reader: A key of the ``ValueContainer`` that reads the value
-        public init(storage: Storage, owner: Storage.Key? = nil) {
-            self.storage = storage
+        public init(storage: Storage? = nil, owner: Storage.Key? = nil) {
+            self.storage = storage ?? Warehouse[.defaultStorage]
             self.owner = owner
+        }
+
+        func callAsFunction<V>(_ key: Storage.Key, readerKey: Storage.Key? = nil, fallbackValue: () -> V ) -> V {
+            if let readerKey = readerKey {
+                storage.insertDependency(readerKey, for: key)
+            }
+            guard let storedValue = storage.readValue(at: key) as? V else {
+                let newValue = fallbackValue()
+                storage.update(value: newValue, atKey: key)
+                return newValue
+            }
+            return storedValue
         }
 
     }
