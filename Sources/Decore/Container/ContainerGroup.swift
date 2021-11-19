@@ -10,7 +10,7 @@ public protocol ContainerGroup: ValueContainer {
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
     /// - Returns: ``Value``
-    static func value(for id: ID) -> Value
+    static func initialValue(for id: ID) -> Value
 
     /// Must return a unique key to store the value in the storage
     /// using a given ``ID``.
@@ -25,18 +25,5 @@ public extension ContainerGroup {
     static func key(for id: ID) -> Storage.Key {
         .group(String(describing: Self.self), container: id)
     }
-}
-
-extension Storage {
-
-    func write<C: ContainerGroup>(
-        _ value: C.Value,
-        into containerGroup: C.Type,
-        at id: C.ID
-    ) {
-        let destination = C.key(for: id)
-        update(value: value, atKey: destination)
-    }
-    
 }
 

@@ -29,9 +29,9 @@ public extension Storage {
             self.owner = owner
         }
 
-        func callAsFunction<V>(_ key: Storage.Key, readerKey: Storage.Key? = nil, fallbackValue: () -> V ) -> V {
-            if let readerKey = readerKey {
-                storage.insertDependency(readerKey, for: key)
+        func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V ) -> V {
+            if let owner = owner {
+                storage.insertDependency(owner, for: key)
             }
             guard let storedValue = storage.readValue(at: key) as? V else {
                 let newValue = fallbackValue()

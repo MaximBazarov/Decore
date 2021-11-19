@@ -36,33 +36,6 @@ public extension Computation {
         .container(String(describing: Self.self))
     }
 }
-extension Computation {
+public extension Computation {
     static func shouldStoreComputedValue() -> Bool { true }
 }
-
-
-// MARK: - Storage Reader
-
-public extension Storage.Reader {
-
-//        let destination = container.key()
-//        let selfKey =
-//
-//        var computedValue: C.Value {
-//            let newValue = computation.value(read: self)
-//            return newValue
-//        }
-//
-//        if computation.shouldStoreComputedValue() {
-//            guard let storedValue = self.read(key: destination) as? C.Value else {
-//                let newValue = computedValue
-//                update(container, value: newValue, atKey: container.key())
-//                return newValue
-//            }
-//            return storedValue
-//        } else {
-//            return computedValue
-//        }
-//    }
-}
-

@@ -15,8 +15,10 @@
 		D29B4595273F9973004AE38C /* Demo_CounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B4594273F9973004AE38C /* Demo_CounterTests.swift */; };
 		D29B459F273F9973004AE38C /* Demo_CounterUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B459E273F9973004AE38C /* Demo_CounterUITests.swift */; };
 		D29B45A1273F9973004AE38C /* Demo_CounterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B45A0273F9973004AE38C /* Demo_CounterUITestsLaunchTests.swift */; };
-		D29B45AE273F9A00004AE38C /* CounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B45AD273F9A00004AE38C /* CounterView.swift */; };
+		D29B45AE273F9A00004AE38C /* CounterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B45AD273F9A00004AE38C /* CounterListView.swift */; };
 		D29B45B4273F9A97004AE38C /* Decore in Frameworks */ = {isa = PBXBuildFile; productRef = D29B45B3273F9A97004AE38C /* Decore */; };
+		D2A9A9E22744DFA000FB6618 /* CounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9A9E12744DFA000FB6618 /* CounterView.swift */; };
+		D2A9A9E52744E14400FB6618 /* GlassButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9A9E42744E14400FB6618 /* GlassButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +51,10 @@
 		D29B459A273F9973004AE38C /* Demo-CounterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Demo-CounterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D29B459E273F9973004AE38C /* Demo_CounterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo_CounterUITests.swift; sourceTree = "<group>"; };
 		D29B45A0273F9973004AE38C /* Demo_CounterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo_CounterUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D29B45AD273F9A00004AE38C /* CounterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CounterView.swift; sourceTree = "<group>"; };
+		D29B45AD273F9A00004AE38C /* CounterListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CounterListView.swift; sourceTree = "<group>"; };
 		D29B45B1273F9A86004AE38C /* Decore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Decore; path = ..; sourceTree = "<group>"; };
+		D2A9A9E12744DFA000FB6618 /* CounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterView.swift; sourceTree = "<group>"; };
+		D2A9A9E42744E14400FB6618 /* GlassButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,7 +108,9 @@
 		D29B457C273F9972004AE38C /* Demo-Counter */ = {
 			isa = PBXGroup;
 			children = (
-				D29B45AD273F9A00004AE38C /* CounterView.swift */,
+				D2A9A9E32744E13700FB6618 /* DesignSystem */,
+				D2A9A9E02744DF8700FB6618 /* Counter */,
+				D29B45AD273F9A00004AE38C /* CounterListView.swift */,
 				D29B457D273F9972004AE38C /* AppDelegate.swift */,
 				D29B457F273F9972004AE38C /* SceneDelegate.swift */,
 				D29B4583273F9972004AE38C /* Main.storyboard */,
@@ -145,6 +151,22 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D2A9A9E02744DF8700FB6618 /* Counter */ = {
+			isa = PBXGroup;
+			children = (
+				D2A9A9E12744DFA000FB6618 /* CounterView.swift */,
+			);
+			path = Counter;
+			sourceTree = "<group>";
+		};
+		D2A9A9E32744E13700FB6618 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				D2A9A9E42744E14400FB6618 /* GlassButton.swift */,
+			);
+			path = DesignSystem;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,9 +303,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2A9A9E52744E14400FB6618 /* GlassButton.swift in Sources */,
 				D29B457E273F9972004AE38C /* AppDelegate.swift in Sources */,
 				D29B4580273F9972004AE38C /* SceneDelegate.swift in Sources */,
-				D29B45AE273F9A00004AE38C /* CounterView.swift in Sources */,
+				D29B45AE273F9A00004AE38C /* CounterListView.swift in Sources */,
+				D2A9A9E22744DFA000FB6618 /* CounterView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,8 @@ final class ContainerTests: XCTestCase {
 
     func test_writeContainerValue_valueShouldBeWrittenIntoStorage() throws {
         let storage = Storage()
-        storage.write(7, into: TestContainer.self)
+        let container = TestContainer.self
+        storage.update(value: 7, atKey: container.key())
 
         let result = try XCTUnwrap(
             storage.storage[TestContainer.key()] as? Int
@@ -22,7 +23,7 @@ final class ContainerTests: XCTestCase {
     func test_Reader_callAsFunction_shouldReturnWrittenValue() throws {
         let storage = Storage()
         let container = TestContainer.self
-        storage.write(7, into: container)
+        storage.update(value: 7, atKey: container.key())
         let read = Storage.Reader(storage: storage)
         let result = read(container)
         XCTAssertEqual(result, 7)

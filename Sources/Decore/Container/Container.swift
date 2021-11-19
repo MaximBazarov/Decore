@@ -59,8 +59,8 @@ public extension Container {
 
 public extension Storage.Reader {
 
-    func callAsFunction<C: Container>(_ container: C.Type, as readerKey: Storage.Key? = nil) -> C.Value {
-        return self(container.key(), readerKey: readerKey, fallbackValue: container.initialValue)
+    func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
+        return self(container.key(), fallbackValue: container.initialValue)
     }
 
 }

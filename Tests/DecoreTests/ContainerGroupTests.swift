@@ -4,16 +4,20 @@ import XCTest
 final class ContainerGroupTests: XCTestCase {
 
     struct TestContainerGroup: ContainerGroup {
-
+        static func initialValue(for id: Int) -> Int {
+            1
+        }
+        typealias ID = Int
         typealias Value = Int
-        static func value(for id: Int) -> Value { 1 }
     }
 
     func test_writeContainerGroupValue_valueShouldBeWrittenIntoStorage() throws {
         let storage = Storage()
         let id = 0
-        storage.write(7, into: TestContainerGroup.self, at: id)
-        let key = Storage.Key.group("TestContainerGroup", container: id)
+        let container = TestContainerGroup.self
+        let key = container.key(for: id)
+        storage.update(value: 7, atKey: key)
+
         let result = try XCTUnwrap(
             storage.storage[key] as? Int
         )

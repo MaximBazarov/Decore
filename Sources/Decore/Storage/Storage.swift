@@ -11,7 +11,7 @@ public final class Storage {
     }
 
     /// Raw storage with all the ``Container``s
-    var storage: [AnyHashable: Any] = [:]
+    var storage: [Key: Any] = [:]
 
     /// TBD
     var dependencies: [Key: [Key]] = [:]
@@ -50,6 +50,9 @@ public final class Storage {
 
     private func invalidateValue(at key: Storage.Key) {
         storage.removeValue(forKey: key)
+        for depender in dependencies[key] ?? [] {
+            storage.removeValue(forKey: depender)
+        }
     }
 
     private func willChangeValue(_ destination: Key) {
