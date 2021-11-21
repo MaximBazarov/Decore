@@ -20,13 +20,4 @@ final class ContainerTests: XCTestCase {
         XCTAssertEqual(result, 7)
     }
 
-    func test_Reader_callAsFunction_shouldReturnWrittenValue() throws {
-        let storage = Storage()
-        let container = TestContainer.self
-        storage.update(value: 7, atKey: container.key())
-        let read = Storage.Reader(storage: storage)
-        let result = read(container)
-        XCTAssertEqual(result, 7)
-    }
-
 }

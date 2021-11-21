@@ -32,8 +32,9 @@ final class ObserveTests: XCTestCase {
         static func initialValue() -> Value { 1 }
     }
 
+    var storage: Storage { Warehouse.storage(for: Self.self) }
+
     func test_Observe_TwoContainersChange_shouldReceiveTwoUpdates() throws {
-        let storage = Storage()
         let a = TestContainerA.self
         let b = TestContainerA.self
         let sut = TestClass()

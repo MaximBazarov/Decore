@@ -9,36 +9,21 @@ public extension Storage {
     /// where `Container` is the ``ValueContainer`` that extends.
     struct Reader {
 
-        let storage: Storage
         let owner: Storage.Key?
 
-        /// Read the value for key: ``Storage/Key`` from ``Storage``
-        func read(key destination: Storage.Key) -> Any? {
-            if let owner = owner {
-                storage.insertDependency(owner, for: destination)
-            }
-            return storage.readValue(at:destination)
-        }
+        var storage: Storage
 
         /// Initialize a reader that reads the storage adding dependency.
         /// - Parameters:
         ///   - storage: ``Storage`` to read from
         ///   - reader: A key of the ``ValueContainer`` that reads the value
         public init(storage: Storage? = nil, owner: Storage.Key? = nil) {
-            self.storage = storage ?? Warehouse[.defaultStorage]
             self.owner = owner
+            self.storage = storage ?? Warehouse.storage(for: Self.self)
         }
 
-        func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V ) -> V {
-            if let owner = owner {
-                storage.insertDependency(owner, for: key)
-            }
-            guard let storedValue = storage.readValue(at: key) as? V else {
-                let newValue = fallbackValue()
-                storage.update(value: newValue, atKey: key)
-                return newValue
-            }
-            return storedValue
+        func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V) -> V {
+            return storage.readValue(at: key, fallbackValue: fallbackValue, depender: owner)
         }
 
     }

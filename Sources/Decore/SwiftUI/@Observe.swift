@@ -23,29 +23,26 @@ import Combine
 @propertyWrapper
 public struct Observe<Value>: DynamicProperty {
 
-    @ObservedObject var containerObserver: ObservableContainer<Value>
+    @ObservedObject var observation: ContainerObservation
+
+    let binding: Bind<Value>
 
     public var wrappedValue: Value {
-        get { containerObserver.value }
+        get {
+            binding.wrappedValue            
+        }
     }
 
     public init<C: Container>(_ container: C.Type) where C.Value == Value {
-        containerObserver = ObservableContainer<Value>(
-            key: container.key(),
-            fallbackValue: {
-                container.initialValue()
-            }
-        )
+        let binding = Bind(container)
+        observation = binding.observation
+        self.binding = binding
     }
 
     public init<C: Computation>(_ computation: C.Type) where C.Value == Value {
-        let key = computation.key()
-        containerObserver = ObservableContainer<Value>(
-            key: key,
-            fallbackValue: {
-                computation.value(read: Storage.Reader(owner: computation.key()))
-            }
-        )
+        let binding = Bind(computation)
+        observation = binding.observation
+        self.binding = binding
     }
 
 }

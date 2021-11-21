@@ -13,6 +13,13 @@ import Foundation
 ///
 public final class Warehouse {
 
+
+    /// Returns the storage for the object
+    public static func storage<T>(for type: T.Type) -> Storage {
+        /// to be changed when introducing multi storage support
+        Warehouse[.defaultStorage]
+    }
+
     /// Storage unique identifier.
     public enum Key: Hashable {
         case defaultStorage

@@ -36,8 +36,29 @@ public final class Storage {
         self.dependencies[key] = dependencies
     }
 
-    func readValue(at destination: Key) -> Any? {
-        let value = storage[destination]
+
+    /// Reads the value from storage.
+    /// Uses `fallbackValue` in cases when value isn't in storage.
+    /// if `shouldStoreFallbackValue` is `true` writes `fallbackValue` into storage
+    /// Adds dependency of `depender` for key that is being read.
+    /// - Returns: Value
+    func readValue<Value>(
+        at destination: Key,
+        fallbackValue: () -> Value,
+        shouldStoreFallbackValue: Bool = true,
+        depender: Key? = nil
+    ) -> Value {
+        if let depender = depender {
+            insertDependency(depender, for: destination)
+        }
+        guard let value = storage[destination] as? Value
+        else {
+            let newValue = fallbackValue()
+            if shouldStoreFallbackValue {
+                update(value: newValue, atKey: destination)
+            }
+            return newValue
+        }
         return value
     }
 

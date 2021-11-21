@@ -5,11 +5,6 @@ import Combine
 
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 
-
-class AnyObservableObject: ObservableObject {
-    typealias ObjectWillChangePublisher = AnyPublisher
-}
-
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 class PropertiesObserver {
 

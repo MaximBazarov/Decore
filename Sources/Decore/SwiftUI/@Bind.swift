@@ -23,11 +23,30 @@ import Combine
 @propertyWrapper
 public struct Bind<Value>: DynamicProperty {
 
-    @ObservedObject var containerObserver: ObservableContainer<Value>
+    @ObservedObject var observation = ContainerObservation()
+
+    let key: Storage.Key
+    let depender: Storage.Key?
+    let fallbackValue: () -> Value
+    let shouldPreserveFallbackValue: Bool
+
+    var storage: Storage {
+        Warehouse.storage(for: Self.self)
+    }
 
     public var wrappedValue: Value {
-        get { containerObserver.value }
-        nonmutating set { containerObserver.value = newValue }
+        get {
+            storage.insertObservation(observation, for: key)
+            return storage.readValue(
+                at: key,
+                fallbackValue: fallbackValue,
+                shouldStoreFallbackValue: shouldPreserveFallbackValue,
+                depender: depender
+            )
+        }
+        nonmutating set {
+            storage.update(value: newValue, atKey: key)
+        }
     }
 
     public var projectedValue: Binding<Value> {
@@ -38,17 +57,20 @@ public struct Bind<Value>: DynamicProperty {
     }
 
     public init<C: Container>(_ container: C.Type) where C.Value == Value {
-        containerObserver = ObservableContainer<Value>(
-            key: container.key(),
-            fallbackValue: {
-                container.initialValue()
-            }
-        )
+        key = container.key()
+        fallbackValue = container.initialValue
+        depender = nil
+        shouldPreserveFallbackValue = true
     }
-}
 
-public protocol MirrorSubscribe {
-    func subscribe(_ callBack: @escaping () -> Void )
+    public init<C: Computation>(_ computation: C.Type) where C.Value == Value {
+        key = computation.key()
+        depender = computation.key()
+        let reader = Storage.Reader(owner: depender)
+        fallbackValue = { computation.value(read: reader) }
+        shouldPreserveFallbackValue = true
+    }
+
 }
 
 #endif
