@@ -6,7 +6,7 @@
 ///
 /// **Usage:**
 /// TBD
-public protocol Computation: KeyedContainer {
+public protocol Computation: ValueContainer, KeyedContainer {
 
     /// Called to decide whether to write the value into the ``Storage`` or not.
     /// Return true to write value into the ``Storage``

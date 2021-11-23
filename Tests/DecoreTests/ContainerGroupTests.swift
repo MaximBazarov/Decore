@@ -3,7 +3,7 @@ import XCTest
 
 final class ContainerGroupTests: XCTestCase {
 
-    struct TestContainerGroup: ContainerGroup {
+    struct TestContainerGroup: GroupContainer {
         static func initialValue(for id: Int) -> Int {
             1
         }

@@ -1,7 +1,7 @@
 import SwiftUI
 import Decore
 
-struct Counter: ContainerGroup {
+struct Counter: GroupContainer {
     typealias Value = Int
     typealias ID = Int
 

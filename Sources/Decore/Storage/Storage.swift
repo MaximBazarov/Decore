@@ -7,7 +7,8 @@ public final class Storage {
     /// A unique key for the container.
     public enum Key: Hashable {
         case container(AnyHashable)
-        case group(AnyHashable, container: AnyHashable)
+        case group(AnyHashable)
+        case groupItem(AnyHashable, id: AnyHashable)
     }
 
     /// Raw storage with all the ``Container``s

@@ -21,20 +21,20 @@ import Combine
 /// ```
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 @propertyWrapper
-public struct Bind<Value>: DynamicProperty {
+public struct Bind<C: ValueContainer>: DynamicProperty {
 
     @ObservedObject var observation = ContainerObservation()
 
     let key: Storage.Key
     let depender: Storage.Key?
-    let fallbackValue: () -> Value
+    let fallbackValue: () -> C.Value
     let shouldPreserveFallbackValue: Bool
 
     var storage: Storage {
         Warehouse.storage(for: Self.self)
     }
 
-    public var wrappedValue: Value {
+    public var wrappedValue: C.Value {
         get {
             storage.insertObservation(observation, for: key)
             return storage.readValue(
@@ -49,25 +49,38 @@ public struct Bind<Value>: DynamicProperty {
         }
     }
 
-    public var projectedValue: Binding<Value> {
+    public var projectedValue: Binding<C.Value> {
         Binding(
             get: { wrappedValue },
             set: { wrappedValue = $0 }
         )
     }
 
-    public init<C: Container>(_ container: C.Type) where C.Value == Value {
+    public init<WrappedContainer: Container>(_ container: WrappedContainer.Type)
+    where WrappedContainer.Value == C.Value
+    {
         key = container.key()
         fallbackValue = container.initialValue
         depender = nil
         shouldPreserveFallbackValue = true
     }
 
-    public init<C: Computation>(_ computation: C.Type) where C.Value == Value {
+    public init<WrappedContainer: Computation>(_ computation: WrappedContainer.Type)
+    where WrappedContainer.Value == C.Value
+    {
         key = computation.key()
         depender = computation.key()
         let reader = Storage.Reader(owner: depender)
         fallbackValue = { computation.value(read: reader) }
+        shouldPreserveFallbackValue = true
+    }
+
+    public init<WrappedContainer: GroupContainer>(_ groupContainer: WrappedContainer.Type)
+    where WrappedContainer.Value == C.Value
+    {
+        key = groupContainer.key()
+        fallbackValue = groupContainer.Value.initialValue
+        depender = nil
         shouldPreserveFallbackValue = true
     }
 

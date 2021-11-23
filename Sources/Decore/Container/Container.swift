@@ -2,20 +2,13 @@
 /// Storage can read, write and observe the value using a unique key
 /// returned by ``key()-9gare`` function.
 ///
-public protocol Container: KeyedContainer {
+public protocol Container: ValueContainer, KeyedContainer {
 
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
     /// - Returns: ``Value``
     static func initialValue() -> Value
-}
-
-public protocol KeyedContainer: ValueContainer {
-
-    /// Must return a unique key to store the value in the storage.
-    /// - Returns: ``Storage/Key``
-    static func key() -> Storage.Key
 }
 
 // MARK: - Key Defaut Implementation
