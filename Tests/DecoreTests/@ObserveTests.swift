@@ -22,7 +22,7 @@ final class ObserveTests: XCTestCase {
         }
     }
 
-    struct TestContainerA: Container {
+    struct TestContainerA: Container, ValueContainer {
         typealias Value = Int
         static func initialValue() -> Value { 1 }
     }

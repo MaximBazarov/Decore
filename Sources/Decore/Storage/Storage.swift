@@ -79,6 +79,9 @@ public final class Storage {
 
     private func willChangeValue(_ destination: Key) {
         observations[destination]?.willChangeValue()
+        for dependency in dependencies[destination] ?? [] {
+            observations[dependency]?.willChangeValue()
+        }
         invalidateValue(at: destination)
     }
 

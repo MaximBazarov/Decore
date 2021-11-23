@@ -21,38 +21,38 @@ import Combine
 /// ```
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 @propertyWrapper
-public struct Observe<C: ValueContainer>: DynamicProperty {
+public struct Observe<Value>: DynamicProperty {
 
     @ObservedObject var observation: ContainerObservation
 
-    let binding: Bind<C>
+    let binding: Bind<Value>
 
-    public var wrappedValue: C.Value {
+    public var wrappedValue: Value {
         get {
             binding.wrappedValue            
         }
     }
 
     public init<WrappedContainer: Container>(_ container: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    where WrappedContainer.Value == Value
     {
-        let binding = Bind<C>(container)
+        let binding = Bind(container)
         observation = binding.observation
         self.binding = binding
     }
 
     public init<WrappedContainer: Computation>(_ computation: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    where WrappedContainer.Value == Value
     {
-        let binding = Bind<C>(computation)
+        let binding = Bind(computation)
         observation = binding.observation
         self.binding = binding
     }
 
-    public init<WrappedContainer: GroupContainer>(_ computation: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    public init<WrappedContainer: GroupContainer>(_ group: WrappedContainer.Type)
+    where WrappedContainer.Value == Value
     {
-        let binding = Bind<C>(computation)
+        let binding = Bind(group)
         observation = binding.observation
         self.binding = binding
     }

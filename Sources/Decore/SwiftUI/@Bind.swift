@@ -21,20 +21,20 @@ import Combine
 /// ```
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 @propertyWrapper
-public struct Bind<C: ValueContainer>: DynamicProperty {
+public struct Bind<Value>: DynamicProperty {
 
     @ObservedObject var observation = ContainerObservation()
 
     let key: Storage.Key
     let depender: Storage.Key?
-    let fallbackValue: () -> C.Value
+    let fallbackValue: () -> Value
     let shouldPreserveFallbackValue: Bool
 
     var storage: Storage {
         Warehouse.storage(for: Self.self)
     }
 
-    public var wrappedValue: C.Value {
+    public var wrappedValue: Value {
         get {
             storage.insertObservation(observation, for: key)
             return storage.readValue(
@@ -49,7 +49,7 @@ public struct Bind<C: ValueContainer>: DynamicProperty {
         }
     }
 
-    public var projectedValue: Binding<C.Value> {
+    public var projectedValue: Binding<Value> {
         Binding(
             get: { wrappedValue },
             set: { wrappedValue = $0 }
@@ -57,7 +57,7 @@ public struct Bind<C: ValueContainer>: DynamicProperty {
     }
 
     public init<WrappedContainer: Container>(_ container: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    where WrappedContainer.Value == Value
     {
         key = container.key()
         fallbackValue = container.initialValue
@@ -66,7 +66,7 @@ public struct Bind<C: ValueContainer>: DynamicProperty {
     }
 
     public init<WrappedContainer: Computation>(_ computation: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    where WrappedContainer.Value == Value
     {
         key = computation.key()
         depender = computation.key()
@@ -75,13 +75,13 @@ public struct Bind<C: ValueContainer>: DynamicProperty {
         shouldPreserveFallbackValue = true
     }
 
-    public init<WrappedContainer: GroupContainer>(_ groupContainer: WrappedContainer.Type)
-    where WrappedContainer.Value == C.Value
+    public init<WrappedContainer: GroupContainer>(_ wrapped: WrappedContainer.Type)
+    where WrappedContainer.Value == Value
     {
-        key = groupContainer.key()
-        fallbackValue = groupContainer.Value.initialValue
+        key = wrapped.key()
         depender = nil
         shouldPreserveFallbackValue = true
+        fallbackValue = { wrapped.initialValue() }
     }
 
 }

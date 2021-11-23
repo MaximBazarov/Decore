@@ -1,15 +1,14 @@
-import CloudKit
 
 /// Container Group is the group of ``ValueContainer``
 /// that share the same ``ValueContainer/Value`` type and distinguished by ``ID``.
-public protocol GroupContainer: ValueContainer, KeyedContainer where Value == GroupOf<Element> {
+public protocol GroupContainer: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
 
     associatedtype Element
     /// Unique identifier in addition to the group type name.
     associatedtype ID: Hashable
 
     /// Must return a unique key to store the value in the storage
-    /// using a given ``ID``.
+    /// using a given `IDValue == GroupOf<>``.
     ///
     /// - Returns: ``Storage/Key``
     static func key(for id: ID) -> Storage.Key
@@ -20,41 +19,60 @@ public protocol GroupContainer: ValueContainer, KeyedContainer where Value == Gr
     /// - Returns: ``Value``
     static func initialValue(for id: ID) -> Element
 
+    static func initialValue() -> Value
+    static func getValue(for id: ID) -> Element
+    static func setValue(_ value: Element, for id: ID)
 }
 
-public extension GroupContainer {
+public extension GroupContainer where Value == GroupOf<ID, Element> {
     /// Default implementation generates the ``Storage.Key`` from the type name
     /// of the conforming ``ContainerGroup`` adding the element id.
     static func key(for id: ID) -> Storage.Key {
         .groupItem(String(describing: Self.self), id: id)
     }
 
-
     static func key() -> Storage.Key {
         .group(String(describing: Self.self))
     }
-}
 
-public final class GroupOf<Value> {
-    static func initialValue() -> Self { Self() }
-}
+    static func initialValue() -> Value {
+        GroupOf<Self.ID, Self.Element> (
+            get: { id in getValue(for: id) },
+            set: { element, id in setValue(element, for: id) }
+        )
+    }
 
+    static func getValue(for id: ID) -> Element {
+        let storage = Warehouse.storage(for: Self.self)
+        let elementKey = key(for: id)
+        let groupKey = key()
+        return storage.readValue(
+            at: elementKey,
+            fallbackValue: { initialValue(for: id) },
+            shouldStoreFallbackValue: true,
+            depender: groupKey
+        )
+    }
 
-@available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-public extension Bind where  C: GroupContainer  {
-
-    subscript(_ id: C.ID) -> C.Element {
-        get { fatalError() }
-        set { fatalError() }
+    static func setValue(_ value: Element, for id: ID)  {
+        let storage = Warehouse.storage(for: Self.self)
+        storage.update(value: value, atKey: key(for: id))
     }
 }
 
-@available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-public extension Observe where  C: GroupContainer  {
 
-    subscript(_ id: C.ID) -> C.Element {
-        get { fatalError() }
+public final class GroupOf<ID: Hashable, Element> {
+
+    public init(get: @escaping (ID) -> Element, set: @escaping (Element, ID) -> Void) {
+        self.get = get
+        self.set = set
+    }
+
+    public var get: (ID) -> Element
+    public var set: (Element, ID) -> Void
+
+    public subscript(_ id: ID) -> Element {
+        get { get(id) }
+        set { set(newValue, id) }
     }
 }
-
-
