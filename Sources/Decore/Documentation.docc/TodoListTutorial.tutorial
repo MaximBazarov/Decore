@@ -1,0 +1,70 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Create a Todo app") {
+        This tutorial will walk you through creation of the Todo app using Decore
+    }
+    
+    @Section(title: "Prepare the project") {
+        @ContentAndMedia {
+            Create a new SwiftUI app using Xcode
+        }
+        
+        @Steps {
+            @Step {
+                Create a new SwiftUI project in Xcode.
+                Xcode -> New Project
+                
+                @Image(source: "NewSwiftUIApp-0.png", alt: "Xcode -> New Project")
+            }
+            @Step {
+                Give it a name you want.
+                Make sure you selected "SwiftUI" in the interface section.
+                
+                @Image(source: "NewSwiftUIApp-1.png", alt: "New Project dialog")
+            }
+            
+        }
+    }
+    
+    @Section(title: "Data Layer") {
+        @ContentAndMedia {
+            Every app needs data to operate, for our app, it's a Todo item and a List. 
+
+            Let's start with a Todo item itself.
+        }
+        
+        @Steps {
+            @Step {
+                You usually would create something like this.
+
+                But with Decore, you create a new type for each property. 
+                And if you want them to be nested as if it was a structure, you can use namespacing. 
+                I like to use empty enums for that purpose.               
+                
+                @Code(name: "TodoItem.swift", file: "OldTodoItemState-0.swift")
+            }
+            
+            @Step {
+                Let's go ahead and create an empty enum `TodoItem`.
+
+                and write our first property type for titles:
+                
+                @Code(name: "TodoItemState.swift", file: "TodoItemState-1.swift")
+            }
+            @Step {
+                Create a new SwiftUI project in Xcode
+                
+                @Code(name: "TodoItemState.swift", file: "TodoItemState-2.swift")
+            }
+            @Step {
+                Create a new SwiftUI project in Xcode
+                
+                @Code(name: "State.swift", file: "State-3.swift")
+            }
+            @Step {
+                Create a new SwiftUI project in Xcode
+                
+                @Code(name: "State.swift", file: "State-4.swift")
+            }
+        }
+    }
+}

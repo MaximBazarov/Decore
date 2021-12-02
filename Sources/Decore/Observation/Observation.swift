@@ -1,50 +1,43 @@
-/// Observation is a wrapper for the notification function.
-/// It'll call the `onInvalidate` once, every time the value in storage has changed.
-/// Observation is being added to each read operation,
-/// so we observe only values we are interested in.
-public final class Observation: Hashable {
+import os
+public extension Storage {
 
-    public var onInvalidate: () -> Void
+    class Observation: Hashable {
 
-    public let context: Context
-    private var isValueValid: Bool
+        /// Unique identifier of the observation
+        var id: ObjectIdentifier { ObjectIdentifier(self) }
 
-    public
-    init(
-        _ context: Context,
-        isValueValid: Bool = true
-    ) {
-        self.isValueValid = isValueValid
-        self.context = context
-        self.onInvalidate = {}
-    }
+        /// Flag to eliminate multiple notification when only one value changed
+        private(set) var isValid: Bool = false
 
-    public
-    func invalidateIfNeeded() {
-        guard isValueValid else { return }
-        self.isValueValid = false
-        onInvalidate()
-    }
 
-    public
-    func ready() {
-        self.isValueValid = true
+        // MARK: - Callbacks
+
+        /// Called when a value is about to be written into the ``Storage``
+        func willChangeValue() {
+            let signpostName: StaticString = "Storage.Observation.willChangeValue"
+            os_signpost(.begin, log: .init(subsystem: "\(id)", category: .pointsOfInterest), name: signpostName)
+            defer {
+                os_signpost(.end, log: .init(subsystem: "\(id)", category: .pointsOfInterest), name: signpostName)
+            }
+            guard isValid else { return }
+            isValid = false
+        }
+
+        /// Called after value is written into the ``Storage``
+        func didChangeValue() {
+            isValid = true
+        }
+
+
+        // MARK: - Hashable -
+
+        public func hash(into hasher: inout Hasher) {
+            id.hash(into: &hasher)
+        }
+
+        public static func == (lhs: Observation, rhs: Observation) -> Bool {
+            lhs.id == rhs.id
+        }
+
     }
 }
-
-extension Observation  {
-
-    public var id: ObjectIdentifier {
-        ObjectIdentifier(self)
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        id.hash(into: &hasher)
-    }
-
-    public static func == (lhs: Observation, rhs: Observation) -> Bool {
-        lhs.id == rhs.id
-    }
-
-}
-

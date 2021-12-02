@@ -1,36 +1,60 @@
+/// Container is a wrapper for the ``ValueContainer/Value``.
+/// Storage can read, write and observe the value using a unique key
+/// returned by ``key()-9gare`` function.
+///
+public protocol Container: ValueContainer, KeyedContainer {
 
-/// Keyed container of data in the storage
-public protocol Container {
-    associatedtype Value
+    /// Called when storage needs a value.
+    /// For example when value hasn't been written yet,
+    /// storage will call this function to get the initial value.
+    /// - Returns: ``Value``
+    static func initialValue() -> Value
 }
 
-public extension Storage {
-    /// A key for the ``Container`` that is used to access the value.
-    /// First parameter is always the type name of the child e.g. `Atom<Int>` would have a key `.atom("Int")`.
-    enum Key: Hashable  {
+// MARK: - Key Defaut Implementation
 
-        /// Atomic value, accessed by type name
-        case atom(String)
+public extension Container {
 
-        /// Group of Containers that accessed by id and type name
-        case grouped(String, id: AnyHashable)
-
-        /// A key for the container that is computed and stored.
-        case derived(String)
-
-        /// A key for the container that is computed but never stored.
-        /// A result of the computation is provided every time the value is read.
-        case computation(String)
-
-        // MARK: - Utility -
-
-        /// A key for the container that depends on other container.
-        case observation(String)
-
-        /// For operations that are being performed by the storage itself.
-        case storage(String)
-
-        /// For consumers of the storage e.g. operator classes, views, readers etc.
-        case consumer(String)
+    /// Default implementation generates the ``Storage.Key`` from the type name
+    /// of the conforming ``Container`` .
+    static func key() -> Storage.Key {
+        .container(String(describing: Self.self))
     }
 }
+
+
+// MARK: - Storage Read/Write/Observe
+
+//extension Storage {
+//
+//    /// Writes s given ``ValueContainer/Value`` into a ``Container`` storage.
+//    func write<C: Container>(
+//        _ value: C.Value,
+//        into container: C.Type
+//    ) {
+//        let destination = C.key()
+//        update(value: value, atKey: destination)
+//    }
+//
+//    func read<C: Container>(
+//        _ container: C.Type
+//    ) -> C.Value {
+//        let destination = C.key()
+//        guard let value = readValue(at: destination) as? C.Value else {
+//            let newValue = container.initialValue()
+//            update(value: newValue, atKey: destination)
+//            return newValue
+//        }
+//        return value
+//    }
+//
+//}
+
+public extension Storage.Reader {
+
+    func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
+        return self(container.key(), fallbackValue: container.initialValue)
+    }
+
+}
+

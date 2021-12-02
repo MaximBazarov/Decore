@@ -1,27 +1,41 @@
-
-
-/// Computation is a container for the ``Value`` that is never stored in the ``Storage``.
-/// It gets invalidated every time one of it's dependencies changed.
+/// Computation is the ``Container`` that calculates a value
+/// depending on the other values in the storage that ``Computation`` reads during computation.
+/// if ``Computation/shouldStoreComputedValue()-2c6d5`` returns true,
+/// the computed value will be written into the ``Storage``.
+/// By default it returns `true`.
 ///
 /// **Usage:**
-/// ```swift
-/// struct SelectedItem: Computation {
-///     static var value = { read in
-///         let id = read(SelectedItemID)
-///         read(Items, at: id)
-///     }
-/// }
-/// ```
-public protocol Computation: Container {
-    associatedtype Value
+/// TBD
+public protocol Computation: ValueContainer, KeyedContainer {
 
-    static var value: (Reader) -> Value { get }
+    /// Called to decide whether to write the value into the ``Storage`` or not.
+    /// Return true to write value into the ``Storage``
+    static func shouldStoreComputedValue() -> Bool
+
+    /// Called when when computation value is read
+    /// and there is no valid value in the ``Storage``.
+    ///
+    /// `shouldStoreComputedValue()`: Defines whether a computed value
+    /// should be written into the ``Storage``
+    ///
+    /// - Returns: ``Value``
+    static func value(read: Storage.Reader) -> Value
+
+    /// Must return a unique key to store the value in the storage.
+    /// - Returns: ``Storage/Key``
+    static func key() -> Storage.Key
 }
 
+
+// MARK: - Key Defaut Implementation
+
 public extension Computation {
-
-    static var key: Storage.Key {
-        .computation(String(describing: Self.self))
+    /// Default implementation generates the ``Storage.Key`` from the type name
+    /// of the conforming ``Container`` .
+    static func key() -> Storage.Key {
+        .container(String(describing: Self.self))
     }
-
+}
+public extension Computation {
+    static func shouldStoreComputedValue() -> Bool { true }
 }

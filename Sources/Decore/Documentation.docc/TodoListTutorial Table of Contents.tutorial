@@ -1,0 +1,15 @@
+@Tutorials(name: "Tutorials") {
+    @Intro(title: "Intro title") {
+        Intro
+        
+<!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    }
+    
+    @Chapter(name: "Todo List") {
+        Todo List Tutorial
+        
+<!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+        
+        @TutorialReference(tutorial: "doc:TodoListTutorial")
+    }
+}

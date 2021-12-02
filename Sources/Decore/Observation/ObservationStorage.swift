@@ -1,67 +1,81 @@
-/// Observation storage writes observation to have a `weak` reference.
-/// Also it removes those ``Observation``s that are `nil`
-class ObservationStorage: Hashable {
+extension Storage {
 
-    func insert(_ observation: Observation) {
-        storage.insert(Element(observation))
+    class WeakObservation {
+        weak var value: Observation?
+        init(_ value: Observation) {
+            self.value = value
+        }
     }
 
-    func ready() {
-        storage.forEach { $0.observation?.ready() }
-    }
+    /// Each container might be observed by many observations,
+    /// also we don't want to have a strong reference to the observations,
+    /// to not capture their self
+    /// Also it removes those ``Observation``s that are `nil`
+    class ObservationStorage: Hashable {
 
-    func invalidateIfNeeded() -> (Int,Int) {
-        var invalidated = 0
-        var toDispose = Set<Element>()
-        storage.forEach { element in
-            guard let observation = element.observation else {
-                toDispose.insert(element)
-                return
+        func insert(_ observation: Observation) {
+            observationStorage[observation.id] = WeakObservation(observation)
+        }
+
+        func didChangeValue() {
+            let (toDispose, toNotify) = splitDisposeFromNotify( )
+            toNotify.forEach { id in
+                guard let observation = observationStorage[id]?.value
+                else { return }
+                observation.willChangeValue()
             }
-            invalidated += 1
-            observation.invalidateIfNeeded()
+            toDispose.forEach { id in
+                observationStorage.removeValue(forKey: id)
+            }
         }
-        toDispose.forEach{
-            print("!!~  ├─ removed observation \($0)")
-            storage.remove($0)
+
+        func willChangeValue() {
+            let (toDispose, toNotify) = splitDisposeFromNotify( )
+            toNotify.forEach { id in
+                guard let observation = observationStorage[id]?.value
+                else { return }
+                observation.willChangeValue()
+            }
+            toDispose.forEach { id in
+                observationStorage.removeValue(forKey: id)
+            }
         }
-        return (invalidated, toDispose.count)
-    }
 
-
-    class Element: Hashable {
-        weak var observation: Observation?
-        init(_ observation: Observation) {
-            self.observation = observation
+        /// Enumerates all the observation inserting them into two sets:
+        /// - The observations to notify
+        /// - The observation to remove from further notifications,
+        /// because they were deallocated.
+        /// - Returns: (toDispose, toNotify) each is of type Set of ``WeakObservation``
+        func splitDisposeFromNotify() -> (Set<ObjectIdentifier>, Set<ObjectIdentifier>) {
+            var toDispose = Set<ObjectIdentifier>()
+            var toNotify = Set<ObjectIdentifier>()
+            observationStorage.forEach { id, weakRef in
+                if weakRef.value == nil {
+                    toDispose.insert(id)
+                    return
+                }
+                toNotify.insert(id)
+            }
+            return (toDispose, toNotify)
         }
-    }
 
-    private var storage: Set<Element> = []
 
-}
+        static func == (lhs: ObservationStorage, rhs: ObservationStorage) -> Bool {
+            lhs.id == rhs.id
+        }
 
-extension ObservationStorage.Element {
-    static func == (lhs: ObservationStorage.Element, rhs: ObservationStorage.Element) -> Bool {
-        lhs.observation == rhs.observation
-    }
+        public var id: ObjectIdentifier {
+            ObjectIdentifier(self)
+        }
 
-    func hash(into hasher: inout Hasher) {
-        observation?.hash(into: &hasher)
-    }
-}
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
 
-extension ObservationStorage {
 
-    static func == (lhs: ObservationStorage, rhs: ObservationStorage) -> Bool {
-        lhs.id == rhs.id
-    }
 
-    public var id: ObjectIdentifier {
-        ObjectIdentifier(self)
-    }
+        private(set) var observationStorage: [ObjectIdentifier: WeakObservation] = [:]
 
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 
 }

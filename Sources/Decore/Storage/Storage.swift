@@ -1,152 +1,124 @@
-/// Storage for ``Container``s that stores the values by its ``Key``,
-/// builds the dependencies tree, and assign the observations to observed ``Container``s.
-/// to access the value in the storage, use the ``Reader`` or ``StateOf``.
+import os
+/// Storage for ``Container``s.
+/// Each time the value is read from the storage, it builds a dependency graph.
+/// When value of one ``Container`` changes, storage enumerates through all dependencies
+/// and these will recalculate their value calling the ``Container/value()`` function.
 public final class Storage {
-    
-    internal var observations: [Storage.Key: ObservationStorage] = [:]
-    internal var dependencies: [Storage.Key: Set<Storage.Key>] = [:]
-    internal var values: [Storage.Key: Any] = [:]
-    
-    
-    /// Creates a new storage
-    public init() {}
+
+    /// A unique key for the container.
+    public enum Key: Hashable {
+        case container(AnyHashable)
+        case group(AnyHashable)
+        case groupItem(AnyHashable, id: AnyHashable)
+    }
+
+    /// Raw storage with all the ``Container``s
+    var storage: [Key: Any] = [:]
+
+    /// TBD
+    var dependencies: [Key: [Key]] = [:]
+
+    /// Raw storage with all the ``Observation``s
+    var observations: [Storage.Key: ObservationStorage] = [:]
+
+    /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
+    func insertObservation(_ observation: Observation, for container: Key) {
+        if let observationStorage = observations[container] {
+            observationStorage.insert(observation)
+            return
+        }
+
+        let observationStorage = ObservationStorage()
+        observationStorage.insert(observation)
+        observations[container] = observationStorage
+    }
+
+    func insertDependency(_ depender: Key, for key: Key) {
+        var dependencies = self.dependencies[key] ?? []
+        dependencies.append(depender)
+        self.dependencies[key] = dependencies
+    }
 
 
-    /// Read value from the storage adding observation,
-    /// and building the dependency tree
-    /// - Parameters:
-    ///   - container: ``Storage.Key`` to read
-    ///   - context: Context of the reader, that will be depending on `key`
-    ///   - observation: ``Observation`` to notify of changes
-    ///   - fallbackValue: Function that provides the value if it's not in the storage.
-    ///   - cachingEnabled: If true, the provided fallback value will be written into the storage.
-    ///
-    /// - Returns: Value stored at key or `fallbackValue` if it's not in the storage.
-    func read<Value>(
-        _ container: Storage.Key,
-        context: Context,
+    /// Reads the value from storage.
+    /// Uses `fallbackValue` in cases when value isn't in storage.
+    /// if `shouldStoreFallbackValue` is `true` writes `fallbackValue` into storage
+    /// Adds dependency of `depender` for key that is being read.
+    /// - Returns: Value
+    func readValue<Value>(
+        at destination: Key,
         fallbackValue: () -> Value,
-        observation: Observation? = nil,
-        cachingEnabled: Bool = true
+        shouldStoreFallbackValue: Bool = true,
+        depender: Key? = nil
     ) -> Value {
-        let reader = context.container
-        let tracingValue: Value?
-        print("┌─[R] \(context) reads \(container) ")
-
+        let signpostName: StaticString = "Storage.read"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         defer {
-            if let observation = observation {
-                observations.insert(observation, for: reader)
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        }
+        if let depender = depender {
+            insertDependency(depender, for: destination)
+        }
+        guard let value = storage[destination] as? Value
+        else {
+            let newValue = fallbackValue()
+            if shouldStoreFallbackValue {
+                update(value: newValue, atKey: destination)
             }
-            dependencies.insert(reader, dependsOn: container)
-            let value = tracingValue != nil ? String(describing: tracingValue!) : ""
-            print("└─ \(container) -> \(value) [/R]")
+            return newValue
         }
-
-        if !cachingEnabled {
-            let value = fallbackValue()
-            print("├─  read \(container) fallbackValue, no-caching")
-            tracingValue = value
-            return value
-        }
-
-        if let value = values[container] as? Value {
-            print("├─  read \(container) cached value")
-            tracingValue = value
-            return value
-        }
-
-        let value = fallbackValue()
-        print("├─  read \(container) fallbackValue, caching...")
-        write(value, into: container, context: Context(container: .storage("CACHE FALLBACK VALUE")))
-        tracingValue = value
         return value
     }
-    
-    func write<Value>(_ value: Value, into container: Storage.Key, context: Context) {
-        print("┌─[W] \(context) writes \(value) into \(container)")
 
-        var observationStorages: Set<ObservationStorage> = []
-
-        if let storage = observations[container] {
-            observationStorages.insert(storage)
-        }
-
-        var keysToInvalidate: Set<Key> = []
-
-        dependencies[container]?.forEach { dependency in
-            if let storage = observations[dependency] {
-                observationStorages.insert(storage)
-            }
-            keysToInvalidate.insert(dependency)
-        }
-
-        keysToInvalidate.forEach { key in
-            print("├─ invalidated \(key) in  storage")
-            values.removeValue(forKey: key)
-        }
-
-        values[container] = value
-        var invalidated = 0
-        var disposed = 0
-
-        observationStorages.forEach { storage in
-            let (i, d) = storage.invalidateIfNeeded()
-            invalidated += i
-            disposed += d
-        }
-        if invalidated > 0 {
-            print("├─ \(invalidated) invalidated observations of \(container)")
-        }
-        if disposed > 0 {
-            print("├─ \(disposed) disposed observations of \(container)")
-        }
-
-        observationStorages.forEach { storage in
-            storage.ready()
-        }
-        print("├─  standby observations of [ \(container) ]")
-
-        print("└─ \(container) [/W]")
-    }
-
-}
-
-
-// MARK:  - Observations
-/// Syntax sugar for [Storage.Key: ObservationStorage]
-extension Dictionary where Key == Storage.Key, Value == ObservationStorage {
-    
-    mutating func insert<O: Observation>(_ observation: O, for key: Storage.Key) {
+    public func update(value: Any, atKey destination: Key) {
+        let signpostName: StaticString = "Storage.update"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         defer {
-            print("├─ \(observation.context) — observes -> \(key)")
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         }
-        guard self[key] != nil else {
-            let storage = ObservationStorage()
-            storage.insert(observation)
-            self[key] = storage
-            return
-        }
-        self[key]!.insert(observation)
+        willChangeValue(destination)
+        invalidateValue(at: destination)
+        storage[destination] = value
+        didChangeValue(destination)
     }
-    
-}
 
-// MARK:  - Dependencies
-/// Syntax sugar for [Storage.Key: Set<Storage.Key>]
-extension Dictionary where Key == Storage.Key, Value == Set<Storage.Key> {
-    
-    mutating func insert(_ dependence: Storage.Key, dependsOn key: Storage.Key) {
-        guard dependence != key else { return }
+    private func invalidateValue(at key: Storage.Key) {
+        storage.removeValue(forKey: key)
+        for depender in dependencies[key] ?? [] {
+            storage.removeValue(forKey: depender)
+        }
+    }
+
+    private func willChangeValue(_ destination: Key) {
+        let signpostName: StaticString = "Storage.willChangeValue"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         defer {
-            print("├─ \(dependence) — depends on -> \(key)")
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         }
-        guard self[key] != nil else {
-            var storage = Set<Storage.Key>()
-            storage.insert(dependence)
-            self[key] = storage
-            return
+
+        os_signpost(.event, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        observations[destination]?.willChangeValue()
+        
+        for dependency in dependencies[destination] ?? [] {
+            os_signpost(.event, log: .init(subsystem: "\(dependency)", category: .pointsOfInterest), name: signpostName)
+            observations[dependency]?.willChangeValue()
         }
-        self[key]!.insert(dependence)
+        invalidateValue(at: destination)
+    }
+
+    private func didChangeValue(_ destination: Key) {
+        observations[destination]?.didChangeValue()
     }
 }
 
+
+extension Storage.Key: CustomDebugStringConvertible {
+
+    public var debugDescription: String {
+        switch self {
+        case .container(let name): return "\(name)"
+        case .group(let name): return "\(name)"
+        case .groupItem(let name, let id): return "\(name) | at id: \(id)"
+        }
+    }
+}
