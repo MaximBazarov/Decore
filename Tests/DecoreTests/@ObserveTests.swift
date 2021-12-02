@@ -8,6 +8,8 @@ final class ObserveTests: XCTestCase {
 
         @Observe(TestContainerA.self) var testContainerA
         @Bind(TestContainerB.self) var testContainerB
+        @Bind(TestArrayContainer.self) var testArray
+
 
         var updatesCount: Int = 0
         override func valueUpdated() {
@@ -22,7 +24,12 @@ final class ObserveTests: XCTestCase {
         }
     }
 
-    struct TestContainerA: Container, ValueContainer {
+    struct TestArrayContainer: Container {
+        typealias Value = [Int]
+        static func initialValue() -> Value { [] }
+    }
+
+    struct TestContainerA: Container {
         typealias Value = Int
         static func initialValue() -> Value { 1 }
     }
@@ -55,5 +62,29 @@ final class ObserveTests: XCTestCase {
         XCTAssertGreaterThan(sut.updatesCount, 0)
     }
 
+
+    class ArrayContainerConsumer: PropertiesObserver {
+
+        @Bind(TestArrayContainer.self) var array
+
+        var updatesCount: Int = 0
+        override func valueUpdated() {
+            updatesCount += 1
+        }
+
+        func run() {
+            _ = array
+        }
+    }
+
+    func test_Observe_ArrayContainerAppend_shouldReceiveUpdate() throws {
+        let sut = ArrayContainerConsumer()
+        let sut2 = ArrayContainerConsumer()
+        sut.run()
+        sut2.run()
+        sut.array.append(1)
+        XCTAssertGreaterThan(sut.updatesCount, 0)
+        XCTAssertGreaterThan(sut2.updatesCount, 0)
+    }
 
 }

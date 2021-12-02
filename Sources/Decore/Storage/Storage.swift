@@ -1,3 +1,4 @@
+import os
 /// Storage for ``Container``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
 /// When value of one ``Container`` changes, storage enumerates through all dependencies
@@ -24,6 +25,7 @@ public final class Storage {
     func insertObservation(_ observation: Observation, for container: Key) {
         if let observationStorage = observations[container] {
             observationStorage.insert(observation)
+            return
         }
 
         let observationStorage = ObservationStorage()
@@ -49,6 +51,11 @@ public final class Storage {
         shouldStoreFallbackValue: Bool = true,
         depender: Key? = nil
     ) -> Value {
+        let signpostName: StaticString = "Storage.read"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        defer {
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        }
         if let depender = depender {
             insertDependency(depender, for: destination)
         }
@@ -64,6 +71,11 @@ public final class Storage {
     }
 
     public func update(value: Any, atKey destination: Key) {
+        let signpostName: StaticString = "Storage.update"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        defer {
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        }
         willChangeValue(destination)
         invalidateValue(at: destination)
         storage[destination] = value
@@ -78,8 +90,17 @@ public final class Storage {
     }
 
     private func willChangeValue(_ destination: Key) {
+        let signpostName: StaticString = "Storage.willChangeValue"
+        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        defer {
+            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        }
+
+        os_signpost(.event, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         observations[destination]?.willChangeValue()
+        
         for dependency in dependencies[destination] ?? [] {
+            os_signpost(.event, log: .init(subsystem: "\(dependency)", category: .pointsOfInterest), name: signpostName)
             observations[dependency]?.willChangeValue()
         }
         invalidateValue(at: destination)
@@ -87,5 +108,17 @@ public final class Storage {
 
     private func didChangeValue(_ destination: Key) {
         observations[destination]?.didChangeValue()
+    }
+}
+
+
+extension Storage.Key: CustomDebugStringConvertible {
+
+    public var debugDescription: String {
+        switch self {
+        case .container(let name): return "\(name)"
+        case .group(let name): return "\(name)"
+        case .groupItem(let name, let id): return "\(name) | at id: \(id)"
+        }
     }
 }

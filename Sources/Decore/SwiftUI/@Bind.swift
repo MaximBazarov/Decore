@@ -30,14 +30,14 @@ public struct Bind<Value>: DynamicProperty {
     let fallbackValue: () -> Value
     let shouldPreserveFallbackValue: Bool
 
-    var storage: Storage {
+    var observationStorage: Storage {
         Warehouse.storage(for: Self.self)
     }
 
     public var wrappedValue: Value {
         get {
-            storage.insertObservation(observation, for: key)
-            return storage.readValue(
+            observationStorage.insertObservation(observation, for: key)
+            return observationStorage.readValue(
                 at: key,
                 fallbackValue: fallbackValue,
                 shouldStoreFallbackValue: shouldPreserveFallbackValue,
@@ -45,7 +45,7 @@ public struct Bind<Value>: DynamicProperty {
             )
         }
         nonmutating set {
-            storage.update(value: newValue, atKey: key)
+            observationStorage.update(value: newValue, atKey: key)
         }
     }
 

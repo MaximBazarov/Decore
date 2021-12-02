@@ -1,17 +1,9 @@
 extension Storage {
 
-    class WeakObservation: Hashable {
+    class WeakObservation {
         weak var value: Observation?
         init(_ value: Observation) {
             self.value = value
-        }
-
-        static func == (lhs: WeakObservation, rhs: WeakObservation) -> Bool {
-            lhs.value == rhs.value
-        }
-
-        func hash(into hasher: inout Hasher) {
-            value?.hash(into: &hasher)
         }
     }
 
@@ -22,19 +14,31 @@ extension Storage {
     class ObservationStorage: Hashable {
 
         func insert(_ observation: Observation) {
-            storage.insert(WeakObservation(observation))
+            observationStorage[observation.id] = WeakObservation(observation)
         }
 
         func didChangeValue() {
             let (toDispose, toNotify) = splitDisposeFromNotify( )
-            toNotify.forEach { $0.value?.didChangeValue() }
-            toDispose.forEach { storage.remove($0) }
+            toNotify.forEach { id in
+                guard let observation = observationStorage[id]?.value
+                else { return }
+                observation.willChangeValue()
+            }
+            toDispose.forEach { id in
+                observationStorage.removeValue(forKey: id)
+            }
         }
 
         func willChangeValue() {
             let (toDispose, toNotify) = splitDisposeFromNotify( )
-            toNotify.forEach { $0.value?.willChangeValue() }
-            toDispose.forEach { storage.remove($0) }
+            toNotify.forEach { id in
+                guard let observation = observationStorage[id]?.value
+                else { return }
+                observation.willChangeValue()
+            }
+            toDispose.forEach { id in
+                observationStorage.removeValue(forKey: id)
+            }
         }
 
         /// Enumerates all the observation inserting them into two sets:
@@ -42,15 +46,15 @@ extension Storage {
         /// - The observation to remove from further notifications,
         /// because they were deallocated.
         /// - Returns: (toDispose, toNotify) each is of type Set of ``WeakObservation``
-        func splitDisposeFromNotify() -> (Set<WeakObservation>, Set<WeakObservation>) {
-            var toDispose = Set<WeakObservation>()
-            var toNotify = Set<WeakObservation>()
-            storage.forEach { weakObservation in
-                if weakObservation.value == nil {
-                    toDispose.insert(weakObservation)
+        func splitDisposeFromNotify() -> (Set<ObjectIdentifier>, Set<ObjectIdentifier>) {
+            var toDispose = Set<ObjectIdentifier>()
+            var toNotify = Set<ObjectIdentifier>()
+            observationStorage.forEach { id, weakRef in
+                if weakRef.value == nil {
+                    toDispose.insert(id)
                     return
                 }
-                toNotify.insert(weakObservation)
+                toNotify.insert(id)
             }
             return (toDispose, toNotify)
         }
@@ -70,7 +74,7 @@ extension Storage {
 
 
 
-        private var storage: Set<WeakObservation> = []
+        private(set) var observationStorage: [ObjectIdentifier: WeakObservation] = [:]
 
     }
 

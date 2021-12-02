@@ -19,7 +19,7 @@ public class ContainerObservation: Storage.Observation, ObservableObject {
         objectWillChange.send()
         super.willChangeValue()
     }
-    
+
 }
 
 #endif

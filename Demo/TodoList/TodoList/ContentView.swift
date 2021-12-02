@@ -44,7 +44,6 @@ struct NewID: Computation {
 
 
 
-
 struct ContentView: View {
 
     @Observe(NewID.self) var newID
@@ -77,7 +76,19 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+
     static var previews: some View {
         ContentView()
     }
 }
+//
+//static var previews: some View {
+//    PrepareStorage{
+//        Set(AllTodos.self, [1,2,3])
+//        Set(Title.self, at: 1, "Preview bla bla")
+//        Set(Title.self, at: 2, "Preview bla bla 2")
+//    }.show{
+//        ContentView()
+//    }
+//
+//}

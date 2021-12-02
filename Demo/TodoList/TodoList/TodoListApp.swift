@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import Decore
 
 @main
 struct TodoListApp: App {
+    @Bind(AllTodos.self) var todos
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            VStack {
+                Text("Todos count \(todos.count)")
+                NavigationView {
+                    NavigationLink("Todo List") {
+                        ContentView()
+                    }
+                }
+            }
         }
     }
 }

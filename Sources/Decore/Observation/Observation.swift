@@ -1,3 +1,4 @@
+import os
 public extension Storage {
 
     class Observation: Hashable {
@@ -13,6 +14,11 @@ public extension Storage {
 
         /// Called when a value is about to be written into the ``Storage``
         func willChangeValue() {
+            let signpostName: StaticString = "Storage.Observation.willChangeValue"
+            os_signpost(.begin, log: .init(subsystem: "\(id)", category: .pointsOfInterest), name: signpostName)
+            defer {
+                os_signpost(.end, log: .init(subsystem: "\(id)", category: .pointsOfInterest), name: signpostName)
+            }
             guard isValid else { return }
             isValid = false
         }
