@@ -27,32 +27,45 @@ public struct Observe<Value>: DynamicProperty {
 
     let binding: Bind<Value>
 
+    public var context: Context {
+        binding.context
+    }
+
     public var wrappedValue: Value {
         get {
             binding.wrappedValue            
         }
     }
 
-    public init<WrappedContainer: Container>(_ container: WrappedContainer.Type)
+    public init<WrappedContainer: Container>(
+        _ container: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
-        let binding = Bind(container)
+        let binding = Bind(container, file: file, fileID: fileID, line: line, column: column, function: function)
         observation = binding.observation
         self.binding = binding
     }
 
-    public init<WrappedContainer: Computation>(_ computation: WrappedContainer.Type)
+    public init<WrappedContainer: Computation>(
+        _ computation: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
-        let binding = Bind(computation)
+        let binding = Bind(computation, file: file, fileID: fileID, line: line, column: column, function: function)
         observation = binding.observation
         self.binding = binding
     }
 
-    public init<WrappedContainer: GroupContainer>(_ group: WrappedContainer.Type)
+    public init<WrappedContainer: GroupContainer>(
+        _ group: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
-        let binding = Bind(group)
+        let binding = Bind(group,file: file, fileID: fileID, line: line, column: column, function: function)
         observation = binding.observation
         self.binding = binding
     }

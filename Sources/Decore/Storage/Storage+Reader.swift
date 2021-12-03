@@ -10,6 +10,7 @@ public extension Storage {
     struct Reader {
 
         let owner: Storage.Key?
+        let context: Context
 
         var storage: Storage
 
@@ -17,13 +18,19 @@ public extension Storage {
         /// - Parameters:
         ///   - storage: ``Storage`` to read from
         ///   - reader: A key of the ``ValueContainer`` that reads the value
-        public init(storage: Storage? = nil, owner: Storage.Key? = nil) {
+        public init(context: Context, storage: Storage? = nil, owner: Storage.Key? = nil) {
+            self.context = context
             self.owner = owner
             self.storage = storage ?? Warehouse.storage(for: Self.self)
         }
 
         func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V) -> V {
-            return storage.readValue(at: key, fallbackValue: fallbackValue, depender: owner)
+            return storage.readValue(
+                at: key,
+                fallbackValue: fallbackValue,
+                context: context,
+                depender: owner
+            )
         }
 
     }
