@@ -9,8 +9,8 @@ final class ObservationStorageTests: XCTestCase {
         let obs2 = Storage.Observation()
         let key = Storage.Key.container("test")
 
-        storage.insertObservation(obs1, for: key)
-        storage.insertObservation(obs2, for: key)
+        storage.insertObservation(obs1, for: key, context: Context())
+        storage.insertObservation(obs2, for: key, context: Context())
 
         guard let observationStorage = storage.observations[key] else {
             XCTFail("Must be 2 observations, found 0")

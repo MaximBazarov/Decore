@@ -23,18 +23,13 @@ public final class Storage {
 
     /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
     func insertObservation(_ observation: Observation, for container: Key, context: Context) {
-        if let observationStorage = observations[container] {
-            observationStorage.insert(observation)
-            return
-        }
-
-        let observationStorage = ObservationStorage()
+        let observationStorage = observations[container, default: ObservationStorage()]
         observationStorage.insert(observation)
         observations[container] = observationStorage
     }
 
     func insertDependency(_ depender: Key, for key: Key) {
-        var dependencies = self.dependencies[key] ?? []
+        var dependencies = self.dependencies[key, default: []]
         dependencies.append(depender)
         self.dependencies[key] = dependencies
     }
