@@ -3,7 +3,7 @@ import XCTest
 
 final class ObservationStorageTests: XCTestCase {
 
-    func test_writeContainerValue_valueShouldBeWrittenIntoStorage() throws {
+    func test_ObservationStorage_addTwoObservationsForTheKey_shouldStoreBothObservations() throws {
         let storage = Storage()
         let obs1 = Storage.Observation()
         let obs2 = Storage.Observation()
