@@ -19,9 +19,9 @@ public protocol GroupContainer: ValueContainer, KeyedContainer where Value == Gr
     /// - Returns: ``Value``
     static func initialValue(for id: ID) -> Element
 
-    static func initialValue() -> Value
-    static func getValue(for id: ID) -> Element
-    static func setValue(_ value: Element, for id: ID)
+    static func initialValue(context: Context) -> Value
+    static func getValue(for id: ID, context: Context) -> Element
+    static func setValue(_ value: Element, for id: ID, context: Context)
 }
 
 public extension GroupContainer where Value == GroupOf<ID, Element> {
@@ -35,26 +35,27 @@ public extension GroupContainer where Value == GroupOf<ID, Element> {
         .group(String(describing: Self.self))
     }
 
-    static func initialValue() -> Value {
+    static func initialValue(context: Context) -> Value {
         GroupOf<Self.ID, Self.Element> (
-            get: { id in getValue(for: id) },
-            set: { element, id in setValue(element, for: id) }
+            get: { id in getValue(for: id, context: context) },
+            set: { element, id in setValue(element, for: id, context: context) }
         )
     }
 
-    static func getValue(for id: ID) -> Element {
+    static func getValue(for id: ID, context: Context) -> Element {
         let storage = Warehouse.storage(for: Self.self)
         let elementKey = key(for: id)
         let groupKey = key()
         return storage.readValue(
             at: elementKey,
             fallbackValue: { initialValue(for: id) },
+            context: context,
             shouldStoreFallbackValue: true,
             depender: groupKey
         )
     }
 
-    static func setValue(_ value: Element, for id: ID)  {
+    static func setValue(_ value: Element, for id: ID, context: Context)  {
         let storage = Warehouse.storage(for: Self.self)
         storage.update(value: value, atKey: key(for: id))
     }

@@ -14,7 +14,7 @@ final class ReaderTests: XCTestCase {
         let container = TestContainer.self
         let key = container.key()
         storage.update(value: 7, atKey: key)
-        let read = Storage.Reader(storage: storage)
+        let read = Storage.Reader(context: Context(), storage: storage)
         let result = read(container)
         XCTAssertEqual(result, 7)
     }

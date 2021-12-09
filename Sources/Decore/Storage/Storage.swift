@@ -22,19 +22,14 @@ public final class Storage {
     var observations: [Storage.Key: ObservationStorage] = [:]
 
     /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
-    func insertObservation(_ observation: Observation, for container: Key) {
-        if let observationStorage = observations[container] {
-            observationStorage.insert(observation)
-            return
-        }
-
-        let observationStorage = ObservationStorage()
+    func insertObservation(_ observation: Observation, for container: Key, context: Context) {
+        let observationStorage = observations[container, default: ObservationStorage()]
         observationStorage.insert(observation)
         observations[container] = observationStorage
     }
 
     func insertDependency(_ depender: Key, for key: Key) {
-        var dependencies = self.dependencies[key] ?? []
+        var dependencies = self.dependencies[key, default: []]
         dependencies.append(depender)
         self.dependencies[key] = dependencies
     }
@@ -48,13 +43,15 @@ public final class Storage {
     func readValue<Value>(
         at destination: Key,
         fallbackValue: () -> Value,
+        context: Context,
         shouldStoreFallbackValue: Bool = true,
         depender: Key? = nil
     ) -> Value {
         let signpostName: StaticString = "Storage.read"
-        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+        let subsystem: String = "\(destination) | \(context)"
+        os_signpost(.begin, log: .init(subsystem: subsystem, category: .pointsOfInterest), name: signpostName)
         defer {
-            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
+            os_signpost(.end, log: .init(subsystem: subsystem, category: .pointsOfInterest), name: signpostName)
         }
         if let depender = depender {
             insertDependency(depender, for: destination)

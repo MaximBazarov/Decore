@@ -29,6 +29,7 @@ public struct Bind<Value>: DynamicProperty {
     let depender: Storage.Key?
     let fallbackValue: () -> Value
     let shouldPreserveFallbackValue: Bool
+    public let context: Context
 
     var observationStorage: Storage {
         Warehouse.storage(for: Self.self)
@@ -36,10 +37,11 @@ public struct Bind<Value>: DynamicProperty {
 
     public var wrappedValue: Value {
         get {
-            observationStorage.insertObservation(observation, for: key)
+            observationStorage.insertObservation(observation, for: key, context: context)
             return observationStorage.readValue(
                 at: key,
                 fallbackValue: fallbackValue,
+                context: context,
                 shouldStoreFallbackValue: shouldPreserveFallbackValue,
                 depender: depender
             )
@@ -56,32 +58,45 @@ public struct Bind<Value>: DynamicProperty {
         )
     }
 
-    public init<WrappedContainer: Container>(_ container: WrappedContainer.Type)
+    public init<WrappedContainer: Container>(
+        _ container: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
+        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
         key = container.key()
         fallbackValue = container.initialValue
         depender = nil
         shouldPreserveFallbackValue = true
     }
 
-    public init<WrappedContainer: Computation>(_ computation: WrappedContainer.Type)
+    public init<WrappedContainer: Computation>(
+        _ computation: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
+        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
         key = computation.key()
         depender = computation.key()
-        let reader = Storage.Reader(owner: depender)
+        let reader = Storage.Reader(context: context, owner: depender)
         fallbackValue = { computation.value(read: reader) }
         shouldPreserveFallbackValue = true
     }
 
-    public init<WrappedContainer: GroupContainer>(_ wrapped: WrappedContainer.Type)
+    public init<WrappedContainer: GroupContainer>(
+        _ wrapped: WrappedContainer.Type,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
     where WrappedContainer.Value == Value
     {
+        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
+        self.context = context
         key = wrapped.key()
         depender = nil
         shouldPreserveFallbackValue = true
-        fallbackValue = { wrapped.initialValue() }
+        fallbackValue = { wrapped.initialValue(context: context) }
     }
 
 }
