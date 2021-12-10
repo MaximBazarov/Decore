@@ -1,5 +1,5 @@
 //  
-//  File.swift
+//  Transaction.swift
 //  Decore
 //
 //  Created by Maxim Bazarov 
