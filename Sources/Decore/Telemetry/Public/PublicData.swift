@@ -1,5 +1,5 @@
 //  
-//  File.swift
+//  PublicData.swift
 //  Decore
 //
 //  Created by Maxim Bazarov 

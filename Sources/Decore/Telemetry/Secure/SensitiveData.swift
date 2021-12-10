@@ -1,5 +1,5 @@
 //  
-//  File.swift
+//  SensitiveData.swift
 //  Decore
 //
 //  Created by Maxim Bazarov 
