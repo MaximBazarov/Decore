@@ -1,5 +1,14 @@
+//
+//  Context.swift
+//  Decore
+//
+//  Created by Maxim Bazarov
+//  Copyright © 2020 Maxim Bazarov
+//
+
 import Foundation
 
+/// Describe the place in the code.
 public struct Context {
 
     let file: String

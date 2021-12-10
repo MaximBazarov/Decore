@@ -1,8 +1,15 @@
-import os
-/// Storage for ``Container``s.
+//
+//  Storage.swift
+//  Decore
+//
+//  Created by Maxim Bazarov
+//  Copyright © 2020 Maxim Bazarov
+//
+
+/// **TBD**: Storage for ``Container``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
 /// When value of one ``Container`` changes, storage enumerates through all dependencies
-/// and these will recalculate their value calling the ``Container/value()`` function.
+/// and these will recalculate their value calling the ``Container/initialValue()`` function.
 public final class Storage {
 
     /// A unique key for the container.
@@ -47,12 +54,6 @@ public final class Storage {
         shouldStoreFallbackValue: Bool = true,
         depender: Key? = nil
     ) -> Value {
-        let signpostName: StaticString = "Storage.read"
-        let subsystem: String = "\(destination) | \(context)"
-        os_signpost(.begin, log: .init(subsystem: subsystem, category: .pointsOfInterest), name: signpostName)
-        defer {
-            os_signpost(.end, log: .init(subsystem: subsystem, category: .pointsOfInterest), name: signpostName)
-        }
         if let depender = depender {
             insertDependency(depender, for: destination)
         }
@@ -68,11 +69,6 @@ public final class Storage {
     }
 
     public func update(value: Any, atKey destination: Key) {
-        let signpostName: StaticString = "Storage.update"
-        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
-        defer {
-            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
-        }
         willChangeValue(destination)
         invalidateValue(at: destination)
         storage[destination] = value
@@ -87,17 +83,8 @@ public final class Storage {
     }
 
     private func willChangeValue(_ destination: Key) {
-        let signpostName: StaticString = "Storage.willChangeValue"
-        os_signpost(.begin, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
-        defer {
-            os_signpost(.end, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
-        }
-
-        os_signpost(.event, log: .init(subsystem: "\(destination)", category: .pointsOfInterest), name: signpostName)
         observations[destination]?.willChangeValue()
-        
         for dependency in dependencies[destination] ?? [] {
-            os_signpost(.event, log: .init(subsystem: "\(dependency)", category: .pointsOfInterest), name: signpostName)
             observations[dependency]?.willChangeValue()
         }
         invalidateValue(at: destination)

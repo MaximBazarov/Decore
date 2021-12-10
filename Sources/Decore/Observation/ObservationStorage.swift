@@ -1,3 +1,11 @@
+//
+//  ObservationStorage.swift
+//  Decore
+//
+//  Created by Maxim Bazarov
+//  Copyright © 2020 Maxim Bazarov
+//
+
 extension Storage {
 
     class WeakObservation {

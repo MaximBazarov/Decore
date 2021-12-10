@@ -1,3 +1,11 @@
+//
+//  Storage+Reader.swift
+//  Decore
+//
+//  Created by Maxim Bazarov
+//  Copyright © 2020 Maxim Bazarov
+//
+
 public extension Storage {
 
     /// Wraps a ``Storage`` and optionally a ``Storage/Key`` of the reader.
