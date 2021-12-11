@@ -41,7 +41,11 @@ public final class Storage {
         self.dependencies[key] = dependencies
     }
 
+    var transaction: Transaction?
 
+    let transactionStarted = Telemetry.SensitiveEvent("transaction-started")
+    let transactionFinished = Telemetry.SensitiveEvent("transaction-finished")
+    
     /// Reads the value from storage.
     /// Uses `fallbackValue` in cases when value isn't in storage.
     /// if `shouldStoreFallbackValue` is `true` writes `fallbackValue` into storage
@@ -61,7 +65,8 @@ public final class Storage {
         else {
             let newValue = fallbackValue()
             if shouldStoreFallbackValue {
-                update(value: newValue, atKey: destination)
+                storage[destination] = newValue
+                invalidateValueDependencies(at: destination)
             }
             return newValue
         }
@@ -70,13 +75,12 @@ public final class Storage {
 
     public func update(value: Any, atKey destination: Key) {
         willChangeValue(destination)
-        invalidateValue(at: destination)
+        invalidateValueDependencies(at: destination)
         storage[destination] = value
         didChangeValue(destination)
     }
 
-    private func invalidateValue(at key: Storage.Key) {
-        storage.removeValue(forKey: key)
+    private func invalidateValueDependencies(at key: Storage.Key) {
         for depender in dependencies[key] ?? [] {
             storage.removeValue(forKey: depender)
         }
@@ -87,7 +91,6 @@ public final class Storage {
         for dependency in dependencies[destination] ?? [] {
             observations[dependency]?.willChangeValue()
         }
-        invalidateValue(at: destination)
     }
 
     private func didChangeValue(_ destination: Key) {

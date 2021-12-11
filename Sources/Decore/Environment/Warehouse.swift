@@ -22,8 +22,14 @@ import Foundation
 ///
 public final class Warehouse {
 
-    /// Returns the storage for the object
+    /// Returns the storage for the object type
     public static func storage<T>(for type: T.Type) -> Storage {
+        /// to be changed when introducing multi storage support
+        Warehouse[.defaultStorage]
+    }
+
+    /// Returns the storage for the object
+    public static func storage<T>(for type: T) -> Storage {
         /// to be changed when introducing multi storage support
         Warehouse[.defaultStorage]
     }

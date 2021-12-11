@@ -6,6 +6,16 @@
 //  Copyright © 2021 Maxim Bazarov
 //
 
-struct Transaction {
+import Foundation
 
+class Transaction {
+    var id: ObjectIdentifier { ObjectIdentifier(self) }
+
+}
+
+
+struct CurrentTransaction: Container {
+    typealias Value = ObjectIdentifier?
+
+    static func initialValue() -> Value { .none }
 }
