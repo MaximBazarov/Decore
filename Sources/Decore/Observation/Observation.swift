@@ -6,40 +6,29 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-public extension Storage {
-
-    class Observation: Hashable {
-
-        /// Unique identifier of the observation
-        var id: ObjectIdentifier { ObjectIdentifier(self) }
-
-        /// Flag to eliminate multiple notification when only one value changed
-        private(set) var isValid: Bool = false
 
 
-        // MARK: - Callbacks
+/// An object that is added to the storage when the value is read.
+/// So every time the read value changes, this object's ``willChangeValue()``
+/// and ``didChangeValue()-2jxs5`` get called.
+public protocol StorageObservation: AnyObject {
 
-        /// Called when a value is about to be written into the ``Storage``
-        func willChangeValue() {
-            guard isValid else { return }
-            isValid = false
-        }
+    /// Called before the observed value changes
+    func willChangeValue()
 
-        /// Called after value is written into the ``Storage``
-        func didChangeValue() {
-            isValid = true
-        }
+    /// Called after the observed value changes
+    func didChangeValue()
+}
 
 
-        // MARK: - Hashable -
+public extension StorageObservation {
 
-        public func hash(into hasher: inout Hasher) {
-            id.hash(into: &hasher)
-        }
+    /// Default implementation doing nothing.
+    func didChangeValue() {}
+}
 
-        public static func == (lhs: Observation, rhs: Observation) -> Bool {
-            lhs.id == rhs.id
-        }
+public extension StorageObservation {
 
-    }
+    /// Unique identifier of the observation
+    var id: ObjectIdentifier { ObjectIdentifier(self) }
 }

@@ -10,10 +10,15 @@ import XCTest
 
 final class ObservationStorageTests: XCTestCase {
 
+
+    class Observation: StorageObservation {
+        func willChangeValue() {}
+    }
+
     func test_ObservationStorage_addTwoObservationsForTheKey_shouldStoreBothObservations() throws {
         let storage = Storage()
-        let obs1 = Storage.Observation()
-        let obs2 = Storage.Observation()
+        let obs1 = Observation()
+        let obs2 = Observation()
         let key = Storage.Key.container("test")
 
         storage.insertObservation(obs1, for: key, context: Context())

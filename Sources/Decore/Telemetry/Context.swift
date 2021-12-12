@@ -24,6 +24,16 @@ public struct Context {
         self.column = column
         self.function = function
     }
+
+    public static func here(file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function) -> Context {
+        Self.init(
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function
+        )
+    }
 }
 
 extension Context: CustomDebugStringConvertible {

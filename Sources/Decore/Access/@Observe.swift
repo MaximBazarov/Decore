@@ -30,7 +30,7 @@ import Combine
 @propertyWrapper
 public struct Observe<Value>: DynamicProperty {
 
-    @ObservedObject var observation: ContainerObservation
+    @ObservedObject var observation: ObservableStorageObject
 
     let binding: Bind<Value>
 

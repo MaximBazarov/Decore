@@ -22,6 +22,10 @@ extension Telemetry {
     ///
     /// Use this event type when you don't want this event to exposed publicly.
     public struct SensitiveEvent: TelemetryEvent {
+        public init(_ name: String) {
+            self.name = name
+        }
+
         var name: String
     }
 
