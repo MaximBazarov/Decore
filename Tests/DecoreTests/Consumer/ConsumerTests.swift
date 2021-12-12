@@ -29,12 +29,18 @@ final class ConsumerTests: XCTestCase {
         func run() { _ = a }
     }
 
-    func test_Consumer_Observe_shouldGetOnUpdateAndBeAbleToReadValue() throws {
-        @Bind(A.self) var a
-        let sut = ConsumerObserveTest()
-        sut.run()
-        a = 2
-        XCTAssertEqual(sut.updateSequence, [1, 2])
+    func test_performance_Consumer_autoSubscription() {
+        measure {
+            let _ = ConsumerObserveTest()
+        }
     }
+
+func test_Consumer_Observe_shouldGetOnUpdateAndBeAbleToReadValue() throws {
+    @Bind(A.self) var a
+    let sut = ConsumerObserveTest()
+    sut.run()
+    a = 2
+    XCTAssertEqual(sut.updateSequence, [2])
+}
 
 }

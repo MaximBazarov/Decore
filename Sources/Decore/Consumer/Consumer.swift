@@ -23,7 +23,7 @@ class Consumer {
 
     private let context = Context.here()
 
-    private var cancelations: [AnyCancellable] = []
+    private var cancelations: Set<AnyCancellable> = []
 
     private func valueUpdated() {
         onUpdate()
@@ -41,20 +41,43 @@ class Consumer {
     }
 
     private func subscribeToPublishers(of child: Mirror.Child) {
-        if let matchingChild = child.value as? ObservableObjectPublisher {
-            let id = ObjectIdentifier(matchingChild)
-            if subscribed.contains(id) { return }
-            subscribed.insert(id)
-            let cancelation = matchingChild.sink { [weak self] _ in
+        let className = String(describing: child.value)
+        print("* Child \(className)")
+
+        // ContainerObservation found
+        if className.contains("Decore.ObservableStorageObject"),
+           let observation = child.value as? Decore.ObservableStorageObject
+        {
+            print(" ++ Subscribed for \(observation.id)")
+            let cancelation = observation.objectWillChange.sink { [weak self] _ in
+                print(" -> Value updated for \(className)")
                 self?.valueUpdated()
             }
-            cancelations.append(cancelation)
+            cancelations.insert(cancelation)
             return
         }
-        let mirror = Mirror(reflecting: child.value)
-        guard mirror.children.count > 0 else { return }
-        for grandChild in mirror.children {
-            subscribeToPublishers(of: grandChild)
+
+        if className.contains("ObservedObject<ObservableStorageObject>") {
+            let mirror = Mirror(reflecting: child.value)
+            guard mirror.children.count > 0 else { return }
+            for grandChild in mirror.children {
+                subscribeToPublishers(of: grandChild)
+            }
+            return
+        }
+
+        if className.contains("Observe<")
+            || className.contains("Bind<")
+        {
+            let mirror = Mirror(reflecting: child.value)
+            guard mirror.children.count > 0 else { return }
+            for grandChild in mirror.children {
+                subscribeToPublishers(of: grandChild)
+            }
+            return
+        }
+        else {
+            print(" -> Skipping child  \(className)")
         }
     }
 

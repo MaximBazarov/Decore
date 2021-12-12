@@ -9,8 +9,8 @@
 extension Storage {
 
     class WeakObservation {
-        weak var value: Observation?
-        init(_ value: Observation) {
+        weak var value: StorageObservation?
+        init(_ value: StorageObservation) {
             self.value = value
         }
     }
@@ -21,7 +21,7 @@ extension Storage {
     /// Also it removes those ``Observation``s that are `nil`
     class ObservationStorage: Hashable {
 
-        func insert(_ observation: Observation) {
+        func insert(_ observation: StorageObservation) {
             observationStorage[observation.id] = WeakObservation(observation)
         }
 
@@ -79,8 +79,6 @@ extension Storage {
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
-
-
 
         private(set) var observationStorage: [ObjectIdentifier: WeakObservation] = [:]
 

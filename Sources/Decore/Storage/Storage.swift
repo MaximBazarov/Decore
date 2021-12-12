@@ -29,7 +29,7 @@ public final class Storage {
     var observations: [Storage.Key: ObservationStorage] = [:]
 
     /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
-    func insertObservation(_ observation: Observation, for container: Key, context: Context) {
+    func insertObservation(_ observation: StorageObservation, for container: Key, context: Context) {
         let observationStorage = observations[container, default: ObservationStorage()]
         observationStorage.insert(observation)
         observations[container] = observationStorage
