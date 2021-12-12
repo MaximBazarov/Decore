@@ -1,0 +1,16 @@
+@Tutorials(name: "Introducing Decore") {
+    @Intro(title: "Introducing Decore") {
+        Decore is a modern way to declare data layer for Swift applications. 
+        Create your apps faster than ever before and keep them scalable for free.
+        @Image(source: "decore.png", alt: "Decore")
+    }
+    
+    @Chapter(name: "Basics") {
+        The basic building blocks of Decore.
+
+        @Image(source: "containers-and-accessors", alt: "Containers and accessors")
+        
+        @TutorialReference(tutorial: "doc:Containers")
+        @TutorialReference(tutorial: "doc:Accessors")
+    }
+}
