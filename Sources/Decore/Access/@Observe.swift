@@ -10,19 +10,18 @@
 import SwiftUI
 import Combine
 
-/// Notifies the view when value changed.
-/// Provides one-way read access to the the value at given ``Container`` type.
-/// Uses the storage assigned to the consumer from the ``Environment``
-/// or default storage otherwise.
+/// Provides a **read-only** access to the value of a given container.
+/// When declared inside the `SwiftUI.View` or ``Consumer`` notifies these
+/// about the Containers' value change.
 ///
 /// **Usage:**
 /// ```swift
 /// struct TestView: View {
 ///
-///     @Observe(NameAtom.self) var name
+///     @Bind(NameAtom.self) var name
 ///
 ///     var body: some View {
-///         Text(name)
+///         TextField($name)
 ///     }
 /// }
 /// ```

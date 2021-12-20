@@ -50,7 +50,7 @@ public extension GroupContainer where Value == GroupOf<ID, Element> {
     }
 
     static func getValue(for id: ID, context: Context) -> Element {
-        let storage = Warehouse.storage(for: Self.self)
+        @StorageFor(Self.self) var storage
         let elementKey = key(for: id)
         let groupKey = key()
         return storage.readValue(
@@ -63,7 +63,7 @@ public extension GroupContainer where Value == GroupOf<ID, Element> {
     }
 
     static func setValue(_ value: Element, for id: ID, context: Context)  {
-        let storage = Warehouse.storage(for: Self.self)
+        @StorageFor(Self.self) var storage;
         storage.update(value: value, atKey: key(for: id))
     }
 }

@@ -11,7 +11,8 @@ import XCTest
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 final class ObserveTests: XCTestCase {
 
-    class TestClass: PropertiesObserver {
+
+    final class TestClass: Consumer {
 
         @Observe(TestContainerA.self) var testContainerA
         @Bind(TestContainerB.self) var testContainerB
@@ -19,7 +20,8 @@ final class ObserveTests: XCTestCase {
 
 
         var updatesCount: Int = 0
-        override func valueUpdated() {
+
+        override func onUpdate() {
             updatesCount += 1
         }
 
@@ -46,7 +48,7 @@ final class ObserveTests: XCTestCase {
         static func initialValue() -> Value { 1 }
     }
 
-    var storage: Storage { Warehouse.storage(for: Self.self) }
+
 
     /// This test should succeed after introducing transactions
     //    func test_Observe_TwoContainersChange_shouldReceiveTwoUpdates() throws {
@@ -60,6 +62,7 @@ final class ObserveTests: XCTestCase {
     //    }
 
     func test_Observe_TwoContainersChange_shouldReceiveTwoUpdates() throws {
+        @StorageFor(Self.self) var storage
         let a = TestContainerA.self
         let b = TestContainerA.self
         let sut = TestClass()
@@ -70,12 +73,12 @@ final class ObserveTests: XCTestCase {
     }
 
 
-    class ArrayContainerConsumer: PropertiesObserver {
+    final class ArrayContainerConsumer: Consumer {
 
         @Bind(TestArrayContainer.self) var array
 
         var updatesCount: Int = 0
-        override func valueUpdated() {
+        override func onUpdate() {
             updatesCount += 1
         }
 

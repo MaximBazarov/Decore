@@ -18,6 +18,10 @@ The scalable data layer for your applications.
 
 - ``Observe``
 - ``Bind``
+- ``StorageFor``
+
+### SwiftUI 
+- ``StatePreset``
 
 ### Telemetry
 

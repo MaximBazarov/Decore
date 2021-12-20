@@ -20,26 +20,26 @@ import Foundation
 /// let sceneStorage = Warehouse[.storage(uniqueStorageID)]
 /// ```
 ///
-public final class Warehouse {
+final class Warehouse {
 
     /// Returns the storage for the object type
-    public static func storage<T>(for type: T.Type) -> Storage {
+    static func storage<T>(for type: T.Type) -> Storage {
         /// to be changed when introducing multi storage support
         Warehouse[.defaultStorage]
     }
 
     /// Returns the storage for the object
-    public static func storage<T>(for type: T) -> Storage {
+    static func storage<T>(for type: T) -> Storage {
         /// to be changed when introducing multi storage support
         Warehouse[.defaultStorage]
     }
 
     /// Storage unique identifier.
-    public enum Key: Hashable {
+    enum Key: Hashable {
         case defaultStorage
     }
 
-    public static subscript(_ key: Key) -> Storage {
+    static subscript(_ key: Key) -> Storage {
         get {
             guard let storageForKey = warehouse[key] else {
                 let newStorage = Storage()

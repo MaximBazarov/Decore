@@ -41,3 +41,11 @@ public extension Storage.Reader {
 
 }
 
+public extension Storage.Writer {
+
+    func callAsFunction<C: Container>(_ value: C.Value, into container: C.Type) {
+        return self(value, into: container.key())
+    }
+
+}
+

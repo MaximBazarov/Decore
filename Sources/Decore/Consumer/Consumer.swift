@@ -42,15 +42,12 @@ public class Consumer {
 
     private func subscribeToPublishers(of child: Mirror.Child) {
         let className = String(describing: child.value)
-        print("* Child \(className)")
 
         // ContainerObservation found
         if className.contains("Decore.ObservableStorageObject"),
            let observation = child.value as? Decore.ObservableStorageObject
         {
-            print(" ++ Subscribed for \(observation.id)")
             let cancelation = observation.objectWillChange.sink { [weak self] _ in
-                print(" -> Value updated for \(className)")
                 self?.valueUpdated()
             }
             cancelations.insert(cancelation)
@@ -75,9 +72,6 @@ public class Consumer {
                 subscribeToPublishers(of: grandChild)
             }
             return
-        }
-        else {
-            print(" -> Skipping child  \(className)")
         }
     }
 

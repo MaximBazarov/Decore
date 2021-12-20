@@ -6,6 +6,7 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
+
 public extension Storage {
     
     struct Writer {
@@ -21,8 +22,8 @@ public extension Storage {
             self.storage = storage ?? Warehouse.storage(for: Self.self)
         }
         
-        func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V) -> V {
-            fatalError()
+        public func callAsFunction<V>(_ value: V, into key: Storage.Key) {
+            storage.update(value: value, atKey: key)
         }
         
     }

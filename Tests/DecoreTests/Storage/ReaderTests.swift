@@ -16,7 +16,7 @@ final class ReaderTests: XCTestCase {
     }
 
     func test_Reader_callAsFunction_shouldReturnWrittenValue() throws {
-        let storage = Warehouse.storage(for: Self.self)
+        @StorageFor(Self.self) var storage
         let container = TestContainer.self
         let key = container.key()
         storage.update(value: 7, atKey: key)

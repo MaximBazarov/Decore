@@ -44,6 +44,7 @@ public extension Computation {
         .container(String(describing: Self.self))
     }
 }
+
 public extension Computation {
     static func shouldStoreComputedValue() -> Bool { true }
 }

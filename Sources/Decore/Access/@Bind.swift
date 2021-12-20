@@ -10,10 +10,9 @@
 import SwiftUI
 import Combine
 
-/// Notifies the view when value changed.
-/// Provides two-way access to the the value at given ``ValueContainer`` type.
-/// Uses the storage assigned to the consumer from the ``Environment``
-/// or default storage otherwise.
+/// Provides a **two-way** access to the value of a given container.
+/// When declared inside the `SwiftUI.View` or ``Consumer`` notifies these
+/// about the Containers' value change.
 ///
 /// **Usage:**
 /// ```swift
@@ -32,15 +31,13 @@ public struct Bind<Value>: DynamicProperty {
 
     @ObservedObject var observation = ObservableStorageObject()
 
-    let key: Storage.Key
-    let depender: Storage.Key?
-    let fallbackValue: () -> Value
-    let shouldPreserveFallbackValue: Bool
-    public let context: Context
+    private let key: Storage.Key
+    private let depender: Storage.Key?
+    private let fallbackValue: () -> Value
+    private let shouldPreserveFallbackValue: Bool
+    internal let context: Context
 
-    var observationStorage: Storage {
-        Warehouse.storage(for: Self.self)
-    }
+    @StorageFor(Self.self) var observationStorage
 
     public var wrappedValue: Value {
         get {
@@ -65,6 +62,8 @@ public struct Bind<Value>: DynamicProperty {
         )
     }
 
+
+    /// Binding to ``Container``
     public init<WrappedContainer: Container>(
         _ container: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
@@ -78,6 +77,7 @@ public struct Bind<Value>: DynamicProperty {
         shouldPreserveFallbackValue = true
     }
 
+    /// Binding to ``Computation``
     public init<WrappedContainer: Computation>(
         _ computation: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
@@ -92,6 +92,7 @@ public struct Bind<Value>: DynamicProperty {
         shouldPreserveFallbackValue = true
     }
 
+    /// Binding to ``GroupContainer``
     public init<WrappedContainer: GroupContainer>(
         _ wrapped: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function

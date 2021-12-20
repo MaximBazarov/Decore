@@ -14,17 +14,14 @@ public enum Telemetry {
 
     /// Register a ``SecureTelemetryChannel`` to receive events.
     public static func post(_ event: Telemetry.SensitiveEvent) {
-        print(event)
     }
 
     /// Register a ``SecureTelemetryChannel`` to receive events.
     public static func add<C: SecureTelemetryChannel>(_ secureChannel: C) {
-        fatalError()
     }
 
     /// Register a ``PublicTelemetryChannel`` to receive events.
     public static func add<C: PublicTelemetryChannel>(_ publicChannel: C) {
-        fatalError()
     }
 
 }
