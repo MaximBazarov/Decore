@@ -6,10 +6,10 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// **TBD**: Storage for ``Container``s.
+/// **TBD**: Storage for ``AtomicState``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
-/// When value of one ``Container`` changes, storage enumerates through all dependencies
-/// and these will recalculate their value calling the ``Container/initialValue()`` function.
+/// When value of one ``AtomicState`` changes, storage enumerates through all dependencies
+/// and these will recalculate their value calling the ``AtomicState/initialValue()`` function.
 public final class Storage {
 
     /// A unique key for the container.

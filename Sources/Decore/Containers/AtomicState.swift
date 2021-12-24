@@ -1,16 +1,16 @@
 //
-//  Container.swift
+//  AtomicState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// Container is a wrapper for the ``ValueContainer/Value``.
+/// AtomicState is a wrapper for the ``ValueContainer/Value``.
 /// Storage can read, write and observe the value using a unique key
 /// returned by ``key()`` function.
 ///
-public protocol Container: ValueContainer, KeyedContainer {
+public protocol AtomicState: ValueContainer, KeyedContainer {
 
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
@@ -21,10 +21,10 @@ public protocol Container: ValueContainer, KeyedContainer {
 
 // MARK: - Key Defaut Implementation
 
-public extension Container {
+public extension AtomicState {
 
     /// Default implementation generates the ``Storage.Key`` from the type name
-    /// of the conforming ``Container`` .
+    /// of the conforming ``AtomicState`` .
     static func key() -> Storage.Key {
         .container(String(describing: Self.self))
     }
@@ -35,7 +35,7 @@ public extension Container {
 
 public extension Storage.Reader {
 
-    func callAsFunction<C: Container>(_ container: C.Type) -> C.Value {
+    func callAsFunction<C: AtomicState>(_ container: C.Type) -> C.Value {
         return self(container.key(), fallbackValue: container.initialValue)
     }
 
@@ -43,7 +43,7 @@ public extension Storage.Reader {
 
 public extension Storage.Writer {
 
-    func callAsFunction<C: Container>(_ value: C.Value, into container: C.Type) {
+    func callAsFunction<C: AtomicState>(_ value: C.Value, into container: C.Type) {
         return self(value, into: container.key())
     }
 

@@ -14,7 +14,7 @@ class Transaction {
 }
 
 
-struct CurrentTransaction: Container {
+struct CurrentTransaction: AtomicState {
     typealias Value = ObjectIdentifier?
 
     static func initialValue() -> Value { .none }

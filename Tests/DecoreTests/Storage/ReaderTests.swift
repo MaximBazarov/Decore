@@ -10,7 +10,7 @@ import XCTest
 
 final class ReaderTests: XCTestCase {
 
-    struct TestContainer: Container {
+    struct TestContainer: AtomicState {
         typealias Value = Int
         static func initialValue() -> Value { 1 }
     }

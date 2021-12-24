@@ -43,7 +43,7 @@ public struct Observe<Value>: DynamicProperty {
         }
     }
 
-    public init<WrappedContainer: Container>(
+    public init<WrappedContainer: AtomicState>(
         _ container: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )

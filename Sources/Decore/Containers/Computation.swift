@@ -6,7 +6,7 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// Computation is the ``Container`` that calculates a value
+/// Computation is the ``AtomicState`` that calculates a value
 /// depending on the other values in the storage that ``Computation`` reads during computation.
 /// if ``Computation/shouldStoreComputedValue()-2c6d5`` returns true,
 /// the computed value will be written into the ``Storage``.
@@ -39,7 +39,7 @@ public protocol Computation: ValueContainer, KeyedContainer {
 
 public extension Computation {
     /// Default implementation generates the ``Storage.Key`` from the type name
-    /// of the conforming ``Container`` .
+    /// of the conforming ``AtomicState`` .
     static func key() -> Storage.Key {
         .container(String(describing: Self.self))
     }

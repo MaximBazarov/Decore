@@ -11,7 +11,7 @@ import XCTest
 final class ContainerTests: XCTestCase {
 
 
-    struct TestContainer: Container {
+    struct TestContainer: AtomicState {
         typealias Value = Int
         static func initialValue() -> Value { 1 }
     }

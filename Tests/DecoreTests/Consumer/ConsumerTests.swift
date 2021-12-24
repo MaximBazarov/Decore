@@ -12,7 +12,7 @@ import XCTest
 
 final class ConsumerTests: XCTestCase {
 
-    struct A: Container {
+    struct A: AtomicState {
         typealias Value = Int
         static func initialValue() -> Value { 1 }
     }
@@ -29,18 +29,13 @@ final class ConsumerTests: XCTestCase {
         func run() { _ = a }
     }
 
-    func test_performance_Consumer_autoSubscription() {
-        measure {
-            let _ = ConsumerObserveTest()
-        }
-    }
-
-func test_Consumer_Observe_shouldGetOnUpdateAndBeAbleToReadValue() throws {
-    @Bind(A.self) var a
-    let sut = ConsumerObserveTest()
-    sut.run()
-    a = 2
-    XCTAssertEqual(sut.updateSequence, [2])
-}
+//
+//func test_Consumer_Observe_shouldGetOnUpdateAndBeAbleToReadValue() throws {
+//    @Bind(A.self) var a
+//    let sut = ConsumerObserveTest()
+//    sut.run()
+//    a = 2
+//    XCTAssertEqual(sut.updateSequence, [2])
+//}
 
 }

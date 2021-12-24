@@ -63,8 +63,8 @@ public struct Bind<Value>: DynamicProperty {
     }
 
 
-    /// Binding to ``Container``
-    public init<WrappedContainer: Container>(
+    /// Binding to ``AtomicState``
+    public init<WrappedContainer: AtomicState>(
         _ container: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
