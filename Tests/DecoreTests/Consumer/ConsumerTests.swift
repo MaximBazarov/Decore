@@ -12,9 +12,9 @@ import XCTest
 
 final class ConsumerTests: XCTestCase {
 
-    struct A: AtomicState {
+    struct A: Atom {
         typealias Value = Int
-        static func initialValue() -> Value { 1 }
+        static var initialValue: () -> Value  = { 1 }
     }
 
     class ConsumerObserveTest: Consumer {

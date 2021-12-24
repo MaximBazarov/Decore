@@ -12,10 +12,3 @@ class Transaction {
     var id: ObjectIdentifier { ObjectIdentifier(self) }
 
 }
-
-
-struct CurrentTransaction: AtomicState {
-    typealias Value = ObjectIdentifier?
-
-    static func initialValue() -> Value { .none }
-}

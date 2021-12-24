@@ -33,19 +33,19 @@ final class ObserveTests: XCTestCase {
         }
     }
 
-    struct TestArrayContainer: AtomicState {
+    struct TestArrayContainer: Atom {
         typealias Value = [Int]
-        static func initialValue() -> Value { [] }
+        static var initialValue: () -> [Int] = { [] }
     }
 
-    struct TestContainerA: AtomicState {
+    struct TestContainerA: Atom {
         typealias Value = Int
-        static func initialValue() -> Value { 1 }
+        static var initialValue = { 1 }
     }
 
-    struct TestContainerB: AtomicState {
+    struct TestContainerB: Atom {
         typealias Value = Int
-        static func initialValue() -> Value { 1 }
+        static var initialValue = { 1 }
     }
 
 

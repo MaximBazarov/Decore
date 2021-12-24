@@ -30,14 +30,13 @@ import Combine
 public struct Bind<Value>: DynamicProperty {
 
     @ObservedObject var observation = ObservableStorageObject()
-
-    private let key: Storage.Key
-    private let depender: Storage.Key?
-    private let fallbackValue: () -> Value
-    private let shouldPreserveFallbackValue: Bool
-    internal let context: Context
-
     @StorageFor(Self.self) var observationStorage
+
+    internal let key: Storage.Key
+    internal let depender: Storage.Key?
+    internal let fallbackValue: () -> Value
+    internal let shouldPreserveFallbackValue: Bool
+    internal let context: Context
 
     public var wrappedValue: Value {
         get {
@@ -62,23 +61,8 @@ public struct Bind<Value>: DynamicProperty {
         )
     }
 
-
-    /// Binding to ``AtomicState``
-    public init<WrappedContainer: AtomicState>(
-        _ container: WrappedContainer.Type,
-        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
-    )
-    where WrappedContainer.Value == Value
-    {
-        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        key = container.key()
-        fallbackValue = container.initialValue
-        depender = nil
-        shouldPreserveFallbackValue = true
-    }
-
-    /// Binding to ``Computation``
-    public init<WrappedContainer: Computation>(
+    /// Binding to ``ComputedAtom``
+    public init<WrappedContainer: ComputedAtom>(
         _ computation: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
@@ -92,8 +76,8 @@ public struct Bind<Value>: DynamicProperty {
         shouldPreserveFallbackValue = true
     }
 
-    /// Binding to ``GroupContainer``
-    public init<WrappedContainer: GroupContainer>(
+    /// Binding to ``AtomGroup``
+    public init<WrappedContainer: AtomGroup>(
         _ wrapped: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )

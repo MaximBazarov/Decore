@@ -43,18 +43,19 @@ public struct Observe<Value>: DynamicProperty {
         }
     }
 
-    public init<WrappedContainer: AtomicState>(
-        _ container: WrappedContainer.Type,
+    /// One way binding to ``Atom`` value
+    public init<A: Atom>(
+        _ container: A.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
-    where WrappedContainer.Value == Value
+    where A.Value == Value
     {
         let binding = Bind(container, file: file, fileID: fileID, line: line, column: column, function: function)
-        observation = binding.observation
+        self.observation = binding.observation
         self.binding = binding
     }
-
-    public init<WrappedContainer: Computation>(
+    
+    public init<WrappedContainer: ComputedAtom>(
         _ computation: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
@@ -65,7 +66,7 @@ public struct Observe<Value>: DynamicProperty {
         self.binding = binding
     }
 
-    public init<WrappedContainer: GroupContainer>(
+    public init<WrappedContainer: AtomGroup>(
         _ group: WrappedContainer.Type,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )

@@ -13,8 +13,8 @@ public extension Storage {
     ///
     /// It's done because storage doesn't store the type of the value, in container,
     /// so each ``ValueContainer`` must extend the ``Storage/Reader`` with the
-    /// `callAsFunction<C: AtomicState>(_ container: C.Type) -> C.Value` function,
-    /// where `AtomicState` is the ``ValueContainer`` that extends.
+    /// `callAsFunction<C: Atom>(_ container: C.Type) -> C.Value` function,
+    /// where `Atom` is the ``ValueContainer`` that extends.
     struct Reader {
 
         let owner: Storage.Key?

@@ -11,9 +11,9 @@ import XCTest
 final class ContainerTests: XCTestCase {
 
 
-    struct TestContainer: AtomicState {
+    struct TestContainer: Atom {
         typealias Value = Int
-        static func initialValue() -> Value { 1 }
+        static var initialValue: () -> Value = { 1 }
     }
 
     func test_writeContainerValue_valueShouldBeWrittenIntoStorage() throws {
