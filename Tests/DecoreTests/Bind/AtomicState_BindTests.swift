@@ -31,13 +31,13 @@ final class AtomicState_BindTests: XCTestCase {
 
     // MARK: - Read -
 
-    func test_Bind_read_InitialValue_shouldReturnInitialValue() throws {
+    func test_Bind_AtomicState_read_InitialValue_shouldReturnInitialValue() throws {
         let expectedValue = A.initialValue()
         @Bind(containerTested, storage: storage) var result;
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Bind_read_WriteValue_shouldReturnWrittenValue() throws {
+    func test_Bind_AtomicState_read_WriteValue_shouldReturnWrittenValue() throws {
         let expectedValue = 7
         write(expectedValue, into: containerTested)
         @Bind(containerTested, storage: storage) var result;
@@ -45,7 +45,8 @@ final class AtomicState_BindTests: XCTestCase {
     }
 
     // MARK: - Write -
-    func test_Bind_write_storageReadsWrittenValue() throws {
+
+    func test_Bind_AtomicState_write_storageReadsWrittenValue() throws {
         let expectedValue = 8
         @Bind(containerTested, storage: storage) var a;
         a = expectedValue

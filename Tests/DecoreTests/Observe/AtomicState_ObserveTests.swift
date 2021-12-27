@@ -29,13 +29,13 @@ final class AtomicState_ObserveTests: XCTestCase {
 
     // MARK: - Read -
 
-    func test_Observe_read_InitialValue_shouldReturnInitialValue() throws {
+    func test_Observe_AtomicState_InitialValue_shouldReturnInitialValue() throws {
         let expectedValue = A.initialValue()
         @Observe(containerTested, storage: storage) var result;
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Observe_read_WriteValue_shouldReturnWrittenValue() throws {
+    func test_Observe_AtomicState_WrittenValue_shouldReturnWrittenValue() throws {
         let expectedValue = 7
         write(expectedValue, into: containerTested)
         @Observe(containerTested, storage: storage) var result;

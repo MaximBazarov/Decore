@@ -6,9 +6,21 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// AtomicState is a wrapper for the ``ValueContainer/Value``.
-/// Storage can read, write and observe the value using a unique key
-/// returned by ``key()`` function.
+/// AtomicState stores a single value in ``Storage``.
+///
+/// Define the ``AtomicState/initialValue`` to provide a value
+/// when ``AtomicState`` was read before it was written.
+///
+/// **Usage:**
+/// ```swift
+/// struct A: AtomicState {
+///     typealias Value = Int
+///     static var initialValue: () -> Value = { 0 }
+/// }
+/// ```
+/// In this example computed state is a sum of `A` and `B` states.
+/// If `A` or/and `B` states are updated, `Sum` state value will be recalculated
+/// using ``ComputedState/value(read:)`` function.
 ///
 public protocol AtomicState: ValueContainer, KeyedContainer {
 

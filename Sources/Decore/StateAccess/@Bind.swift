@@ -10,10 +10,16 @@
 import SwiftUI
 import Combine
 
-/// Provides a **two-way** access to the value of a given container.
-/// When declared inside the `SwiftUI.View` or ``Consumer`` notifies these
-/// about the Containers' value change.
+/// Provides a **two-way** access to the value of a given state type.
 ///
+/// When declared inside the `SwiftUI.View` acts as `@Binding`
+/// updating the view when value changed.
+///
+/// When used inside a ``Consumer`` calls ``Consumer/onUpdate()``
+/// when value changes. Read ``Consumer`` documentation for more details.
+///
+/// When used inside other classes, structure or functions
+/// acts as a normal variable providing access to the value.
 /// **Usage:**
 /// ```swift
 /// struct TestView: View {
@@ -59,25 +65,6 @@ public struct Bind<Value>: DynamicProperty {
             get: { wrappedValue },
             set: { wrappedValue = $0 }
         )
-    }
-
-   
-
-    /// Binding to ``GroupState``
-    public init<WrappedContainer: GroupState>(
-        _ wrapped: WrappedContainer.Type,
-        storage: Storage? = nil,
-        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
-    )
-    where WrappedContainer.Value == Value
-    {
-        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        self.context = context
-        key = wrapped.key()
-        depender = nil
-        shouldPreserveFallbackValue = true
-        fallbackValue = { wrapped.initialValue(context: context) }
-        self.storage = storage ?? StorageFor(Self.self).wrappedValue
     }
 
 }

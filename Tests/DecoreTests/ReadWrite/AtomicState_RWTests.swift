@@ -1,5 +1,5 @@
 //
-//  AtomicStateRWTests.swift
+//  AtomicState_RWTests.swift
 //  Decore
 //
 //  Copyright © 2020 Maxim Bazarov
@@ -9,9 +9,7 @@ import XCTest
 import Decore
 
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-final class AtomicStateRWTests: XCTestCase {
-
-    // MARK: - AtomicState -
+final class AtomicState_RWTests: XCTestCase {
 
     struct A: AtomicState {
         typealias Value = Int

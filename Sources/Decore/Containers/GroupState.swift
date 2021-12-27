@@ -84,3 +84,20 @@ public final class GroupOf<ID: Hashable, Element> {
         set { set(newValue, id) }
     }
 }
+
+///// Binding to ``GroupState``
+//public init<WrappedContainer: GroupState>(
+//    _ wrapped: WrappedContainer.Type,
+//    storage: Storage? = nil,
+//    file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+//)
+//where WrappedContainer.Value == Value
+//{
+//    let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
+//    self.context = context
+//    key = wrapped.key()
+//    depender = nil
+//    shouldPreserveFallbackValue = true
+//    fallbackValue = { wrapped.initialValue(context: context) }
+//    self.storage = storage ?? StorageFor(Self.self).wrappedValue
+//    }

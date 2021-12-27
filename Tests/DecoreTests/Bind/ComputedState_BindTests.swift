@@ -1,0 +1,57 @@
+//
+//  ComputedState_BindTests.swift
+//  Decore
+//
+//  Copyright © 2020 Maxim Bazarov
+//
+
+import XCTest
+import Decore
+
+@available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+final class ComputedState_BindTests: XCTestCase {
+
+    struct A: AtomicState {
+        typealias Value = Int
+        static var initialValue: () -> Value = { 1 }
+    }
+
+    struct B: AtomicState {
+        typealias Value = Int
+        static var initialValue: () -> Value = { 2 }
+    }
+
+    struct Sum: ComputedState {
+        typealias Value = Int
+        static func value(read: Storage.Reader) -> Int {
+            return read(A.self) + read(B.self)
+        }
+    }
+
+    let containerTested = Sum.self
+    var write: Storage.Writer!
+    var storage: Storage!
+
+    override func setUp() {
+        storage = Storage()
+        write = Storage.Writer(context: .here(), storage: storage, owner: Sum.key())
+    }
+
+    // MARK: - Read -
+
+    func test_Bind_read_InitialValue_shouldReturnInitialValue() throws {
+        let expectedValue = A.initialValue() + B.initialValue()
+        @Bind(containerTested, storage: storage) var result;
+        XCTAssertEqual(result, expectedValue)
+    }
+
+    func test_Bind_read_WriteValue_shouldReturnWrittenValue() throws {
+        let newB = 9
+        let expectedValue = A.initialValue() + newB
+        write(newB, into: B.self)
+        @Bind(containerTested, storage: storage) var result;
+        XCTAssertEqual(result, expectedValue)
+    }
+
+
+}
