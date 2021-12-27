@@ -1,5 +1,5 @@
 //
-//  Atom.swift
+//  AtomicState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
@@ -8,8 +8,8 @@
 
 public extension Storage.Writer {
 
-    /// Writes the given value into the given ``Atom``'s storage.
-    func callAsFunction<C: Atom>(_ value: C.Value, into container: C.Type) {
+    /// Writes the given value into the given ``AtomicState``'s storage.
+    func callAsFunction<C: AtomicState>(_ value: C.Value, into container: C.Type) {
         return self(value, into: container.key())
     }
 

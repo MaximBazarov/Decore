@@ -1,5 +1,5 @@
 //
-//  ObservationStorageTests.swift
+//  StorageObservationTests.swift
 //  Decore
 //
 //  Copyright © 2020 Maxim Bazarov
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Decore
 
-final class ObservationStorageTests: XCTestCase {
+final class StorageObservationTests: XCTestCase {
 
 
     class Observation: StorageObservation {

@@ -43,36 +43,39 @@ public struct Observe<Value>: DynamicProperty {
         }
     }
 
-    /// One way binding to ``Atom`` value
-    public init<A: Atom>(
+    /// One way binding to ``AtomicState`` value
+    public init<A: AtomicState>(
         _ container: A.Type,
+        storage: Storage? = nil,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
     where A.Value == Value
     {
-        let binding = Bind(container, file: file, fileID: fileID, line: line, column: column, function: function)
+        let binding = Bind(container, storage: storage, file: file, fileID: fileID, line: line, column: column, function: function)
         self.observation = binding.observation
         self.binding = binding
     }
     
     public init<WrappedContainer: ComputedAtom>(
         _ computation: WrappedContainer.Type,
+        storage: Storage? = nil,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
     where WrappedContainer.Value == Value
     {
-        let binding = Bind(computation, file: file, fileID: fileID, line: line, column: column, function: function)
+        let binding = Bind(computation, storage: storage, file: file, fileID: fileID, line: line, column: column, function: function)
         observation = binding.observation
         self.binding = binding
     }
 
-    public init<WrappedContainer: AtomGroup>(
+    public init<WrappedContainer: GroupState>(
         _ group: WrappedContainer.Type,
+        storage: Storage? = nil,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
     where WrappedContainer.Value == Value
     {
-        let binding = Bind(group,file: file, fileID: fileID, line: line, column: column, function: function)
+        let binding = Bind(group, storage: storage, file: file, fileID: fileID, line: line, column: column, function: function)
         observation = binding.observation
         self.binding = binding
     }

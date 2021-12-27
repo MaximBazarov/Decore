@@ -1,5 +1,5 @@
 //
-//  Atom.swift
+//  AtomicState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov

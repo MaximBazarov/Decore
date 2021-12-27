@@ -6,10 +6,10 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// **TBD**: Storage for ``Atom``s.
+/// **TBD**: Storage for ``AtomicState``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
-/// When value of one ``Atom`` changes, storage enumerates through all dependencies
-/// and these will recalculate their value calling the ``Atom/initialValue()`` function.
+/// When value of one ``AtomicState`` changes, storage enumerates through all dependencies
+/// and these will recalculate their value calling the ``AtomicState/initialValue()`` function.
 public final class Storage {
 
     /// A unique key for the container.
@@ -18,6 +18,8 @@ public final class Storage {
         case group(AnyHashable)
         case groupItem(AnyHashable, id: AnyHashable)
     }
+
+    public init() {}
 
     /// Raw storage with all the ``Container``s
     var storage: [Key: Any] = [:]
@@ -51,7 +53,7 @@ public final class Storage {
     /// if `shouldStoreFallbackValue` is `true` writes `fallbackValue` into storage
     /// Adds dependency of `depender` for key that is being read.
     /// - Returns: Value
-    func readValue<Value>(
+    internal func readValue<Value>(
         at destination: Key,
         fallbackValue: () -> Value,
         context: Context,
@@ -73,7 +75,7 @@ public final class Storage {
         return value
     }
 
-    public func update(value: Any, atKey destination: Key) {
+    internal func write(value: Any, atKey destination: Key) {
         willChangeValue(destination)
         invalidateValueDependencies(at: destination)
         storage[destination] = value

@@ -30,18 +30,18 @@ import Combine
 public struct Bind<Value>: DynamicProperty {
 
     @ObservedObject var observation = ObservableStorageObject()
-    @StorageFor(Self.self) var observationStorage
 
     internal let key: Storage.Key
     internal let depender: Storage.Key?
     internal let fallbackValue: () -> Value
     internal let shouldPreserveFallbackValue: Bool
     internal let context: Context
+    internal let storage: Storage
 
     public var wrappedValue: Value {
         get {
-            observationStorage.insertObservation(observation, for: key, context: context)
-            return observationStorage.readValue(
+            storage.insertObservation(observation, for: key, context: context)
+            return storage.readValue(
                 at: key,
                 fallbackValue: fallbackValue,
                 context: context,
@@ -50,7 +50,7 @@ public struct Bind<Value>: DynamicProperty {
             )
         }
         nonmutating set {
-            observationStorage.update(value: newValue, atKey: key)
+            storage.write(value: newValue, atKey: key)
         }
     }
 
@@ -61,24 +61,12 @@ public struct Bind<Value>: DynamicProperty {
         )
     }
 
-    /// Binding to ``ComputedAtom``
-    public init<WrappedContainer: ComputedAtom>(
-        _ computation: WrappedContainer.Type,
-        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
-    )
-    where WrappedContainer.Value == Value
-    {
-        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        key = computation.key()
-        depender = computation.key()
-        let reader = Storage.Reader(context: context, owner: depender)
-        fallbackValue = { computation.value(read: reader) }
-        shouldPreserveFallbackValue = true
-    }
+   
 
-    /// Binding to ``AtomGroup``
-    public init<WrappedContainer: AtomGroup>(
+    /// Binding to ``GroupState``
+    public init<WrappedContainer: GroupState>(
         _ wrapped: WrappedContainer.Type,
+        storage: Storage? = nil,
         file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
     )
     where WrappedContainer.Value == Value
@@ -89,6 +77,7 @@ public struct Bind<Value>: DynamicProperty {
         depender = nil
         shouldPreserveFallbackValue = true
         fallbackValue = { wrapped.initialValue(context: context) }
+        self.storage = storage ?? StorageFor(Self.self).wrappedValue
     }
 
 }

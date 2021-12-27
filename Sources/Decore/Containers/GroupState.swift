@@ -1,5 +1,5 @@
 //
-//  AtomGroup.swift
+//  GroupState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
@@ -8,7 +8,7 @@
 
 /// Container Group is the group of ``ValueContainer``
 /// that share the same ``ValueContainer/Value`` type and distinguished by ``ID``.
-public protocol AtomGroup: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
+public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
 
     associatedtype Element
     /// Unique identifier in addition to the group type name.
@@ -31,7 +31,7 @@ public protocol AtomGroup: ValueContainer, KeyedContainer where Value == GroupOf
     static func setValue(_ value: Element, for id: ID, context: Context)
 }
 
-public extension AtomGroup where Value == GroupOf<ID, Element> {
+public extension GroupState where Value == GroupOf<ID, Element> {
     /// Default implementation generates the ``Storage.Key`` from the type name
     /// of the conforming ``ContainerGroup`` adding the element id.
     static func key(for id: ID) -> Storage.Key {
@@ -64,7 +64,7 @@ public extension AtomGroup where Value == GroupOf<ID, Element> {
 
     static func setValue(_ value: Element, for id: ID, context: Context)  {
         @StorageFor(Self.self) var storage;
-        storage.update(value: value, atKey: key(for: id))
+        storage.write(value: value, atKey: key(for: id))
     }
 }
 

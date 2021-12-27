@@ -23,7 +23,7 @@ public extension Storage {
         }
         
         public func callAsFunction<V>(_ value: V, into key: Storage.Key) {
-            storage.update(value: value, atKey: key)
+            storage.write(value: value, atKey: key)
         }
         
     }

@@ -1,5 +1,5 @@
 //
-//  Atom.swift
+//  AtomicState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
@@ -9,9 +9,10 @@
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 extension Bind {
 
-    /// Binding to the ``Atom`` value
-    public init<A: Atom>(
+    /// Binding to the ``AtomicState`` value
+    public init<A: AtomicState>(
         _ container: A.Type,
+        storage: Storage? = nil,
         file: String = #file, fileID: String = #fileID, line: Int = #line,
         column: Int = #column, function: String = #function
     )
@@ -22,5 +23,6 @@ extension Bind {
         fallbackValue = container.initialValue
         depender = nil
         shouldPreserveFallbackValue = true
+        self.storage = storage ?? StorageFor(Self.self).wrappedValue
     }
 }

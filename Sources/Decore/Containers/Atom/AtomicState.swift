@@ -1,16 +1,16 @@
 //
-//  Atom.swift
+//  AtomicState.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// Atom is a wrapper for the ``ValueContainer/Value``.
+/// AtomicState is a wrapper for the ``ValueContainer/Value``.
 /// Storage can read, write and observe the value using a unique key
 /// returned by ``key()`` function.
 ///
-public protocol Atom: ValueContainer, KeyedContainer {
+public protocol AtomicState: ValueContainer, KeyedContainer {
 
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
@@ -19,10 +19,10 @@ public protocol Atom: ValueContainer, KeyedContainer {
     static var initialValue: () -> Value { get }
 }
 
-public extension Atom {
+public extension AtomicState {
 
     /// Default implementation generates the ``Storage.Key`` from the type name
-    /// of the conforming ``Atom`` .
+    /// of the conforming ``AtomicState`` .
     static func key() -> Storage.Key {
         .container(String(describing: Self.self))
     }

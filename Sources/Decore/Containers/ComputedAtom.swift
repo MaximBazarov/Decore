@@ -6,7 +6,7 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// ComputedAtom is the ``Atom`` that calculates a value
+/// ComputedAtom is the ``AtomicState`` that calculates a value
 /// depending on the other values in the storage that ``ComputedAtom`` reads during computation.
 /// if ``ComputedAtom/shouldStoreComputedValue()-2c6d5`` returns true,
 /// the computed value will be written into the ``Storage``.
@@ -39,7 +39,7 @@ public protocol ComputedAtom: ValueContainer, KeyedContainer {
 
 public extension ComputedAtom {
     /// Default implementation generates the ``Storage.Key`` from the type name
-    /// of the conforming ``Atom`` .
+    /// of the conforming ``AtomicState`` .
     static func key() -> Storage.Key {
         .container(String(describing: Self.self))
     }
@@ -47,4 +47,28 @@ public extension ComputedAtom {
 
 public extension ComputedAtom {
     static func shouldStoreComputedValue() -> Bool { true }
+}
+
+@available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+public extension Bind {
+    /// Binding to ``ComputedAtom``
+    init<WrappedContainer: ComputedAtom>(
+        _ computation: WrappedContainer.Type,
+        storage: Storage? = nil,
+        file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
+    )
+    where WrappedContainer.Value == Value
+    {
+        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
+        key = computation.key()
+        depender = computation.key()
+        self.storage = storage ?? StorageFor(Self.self).wrappedValue
+        let reader = Storage.Reader(
+            context: context,
+            storage: self.storage,
+            owner: depender
+        )
+        fallbackValue = { computation.value(read: reader) }
+        shouldPreserveFallbackValue = true
+    }
 }
