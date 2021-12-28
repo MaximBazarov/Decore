@@ -4,7 +4,7 @@ The scalable data layer for your applications.
 
 ## Overview
 
- The overview
+ TBD.
 
 ## Topics
 
@@ -18,21 +18,20 @@ The scalable data layer for your applications.
 
 - ``Observe``
 - ``Bind``
-- ``StorageFor``
 
 ### SwiftUI 
 - ``StatePreset``
 
-### Telemetry
-
-- ``Telemetry``
-- ``Context``
-
-- ``PublicData``
-- ``PublicTelemetryChannel``
-
-- ``SensitiveData``
-- ``SecureTelemetryChannel``
+<!--### Telemetry-->
+<!---->
+<!--- ``Telemetry``-->
+<!--- ``Context``-->
+<!---->
+<!--- ``PublicData``-->
+<!--- ``PublicTelemetryChannel``-->
+<!---->
+<!--- ``SensitiveData``-->
+<!--- ``SecureTelemetryChannel``-->
 
 
 

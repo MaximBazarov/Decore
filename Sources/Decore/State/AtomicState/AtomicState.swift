@@ -27,7 +27,7 @@ public protocol AtomicState: ValueContainer, KeyedContainer {
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
-    /// - Returns: ``Value``
+    /// - Returns: ``ValueContainer/Value``
     static var initialValue: () -> Value { get }
 }
 
