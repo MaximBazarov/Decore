@@ -10,9 +10,9 @@ The scalable data layer for your applications.
 
 ### State Modeling
 
-- ``Container``
-- ``Computation``
-- ``GroupContainer``
+- ``AtomicState``
+- ``ComputedState``
+- ``GroupState``
 
 ### State Access
 

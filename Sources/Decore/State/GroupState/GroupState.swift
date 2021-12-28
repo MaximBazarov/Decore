@@ -6,8 +6,32 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-/// Container Group is the group of ``ValueContainer``
-/// that share the same ``ValueContainer/Value`` type and distinguished by ``ID``.
+/// GroupState stores many values of the same type ``Element``
+/// distinguished by ``ID``.
+///
+/// **Usage:**
+/// ```swift
+/// struct Name: GroupState {
+///     typealias Element = String
+///     typealias ID = Int
+///
+///     static func initialValue(for id: Int) -> String {
+///         ""
+///     }
+/// }
+/// ```
+/// to access the value you need to provide an ``ID`` e.g.
+/// ```swift
+/// struct TodoItemView: View {
+///     var id: TodoList.Item.ID
+///     @Bind(Name.self) var name
+///
+///     var body: some View {
+///         TextField("name", text: $name[id])
+///     }
+/// }
+/// ```
+///
 public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
 
     associatedtype Element
@@ -15,7 +39,7 @@ public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupO
     associatedtype ID: Hashable
 
     /// Must return a unique key to store the value in the storage
-    /// using a given `IDValue == GroupOf<>``.
+    /// using a given ``ID`` `Value == GroupOf<>`.
     ///
     /// - Returns: ``Storage/Key``
     static func key(for id: ID) -> Storage.Key
@@ -26,9 +50,10 @@ public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupO
     /// - Returns: ``Value``
     static func initialValue(for id: ID) -> Element
 
-    static func initialValue(context: Context) -> Value
-    static func getValue(for id: ID, context: Context) -> Element
-    static func setValue(_ value: Element, for id: ID, context: Context)
+    // Group proxy
+    static func initialValue(context: Context, in storage: Storage) -> Value
+    static func getValue(for id: ID, context: Context, in storage: Storage) -> Element
+    static func setValue(_ value: Element, for id: ID, context: Context, in storage: Storage)
 }
 
 public extension GroupState where Value == GroupOf<ID, Element> {
@@ -42,15 +67,14 @@ public extension GroupState where Value == GroupOf<ID, Element> {
         .group(String(describing: Self.self))
     }
 
-    static func initialValue(context: Context) -> Value {
+    static func initialValue(context: Context, in storage: Storage) -> Value {
         GroupOf<Self.ID, Self.Element> (
-            get: { id in getValue(for: id, context: context) },
-            set: { element, id in setValue(element, for: id, context: context) }
+            get: { id in getValue(for: id, context: context, in: storage) },
+            set: { element, id in setValue(element, for: id, context: context, in: storage) }
         )
     }
 
-    static func getValue(for id: ID, context: Context) -> Element {
-        @StorageFor(Self.self) var storage
+    static func getValue(for id: ID, context: Context, in storage: Storage) -> Element {
         let elementKey = key(for: id)
         let groupKey = key()
         return storage.readValue(
@@ -62,8 +86,7 @@ public extension GroupState where Value == GroupOf<ID, Element> {
         )
     }
 
-    static func setValue(_ value: Element, for id: ID, context: Context)  {
-        @StorageFor(Self.self) var storage;
+    static func setValue(_ value: Element, for id: ID, context: Context, in storage: Storage)  {
         storage.write(value: value, atKey: key(for: id))
     }
 }
@@ -85,19 +108,3 @@ public final class GroupOf<ID: Hashable, Element> {
     }
 }
 
-///// Binding to ``GroupState``
-//public init<WrappedContainer: GroupState>(
-//    _ wrapped: WrappedContainer.Type,
-//    storage: Storage? = nil,
-//    file: String = #file, fileID: String = #fileID, line: Int = #line, column: Int = #column, function: String = #function
-//)
-//where WrappedContainer.Value == Value
-//{
-//    let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-//    self.context = context
-//    key = wrapped.key()
-//    depender = nil
-//    shouldPreserveFallbackValue = true
-//    fallbackValue = { wrapped.initialValue(context: context) }
-//    self.storage = storage ?? StorageFor(Self.self).wrappedValue
-//    }

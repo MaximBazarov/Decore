@@ -10,7 +10,14 @@ import XCTest
 
 final class StorageObservationTests: XCTestCase {
 
+    struct Name: GroupState {
+        typealias Element = String
+        typealias ID = Int
 
+        static func initialValue(for id: Int) -> String {
+            ""
+        }
+    }
     class Observation: StorageObservation {
         func willChangeValue() {}
     }

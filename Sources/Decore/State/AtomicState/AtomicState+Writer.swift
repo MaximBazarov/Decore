@@ -15,8 +15,7 @@ public extension Storage.Writer {
     /// write("hello", into: SomeState.self)
     /// ```
     ///
-    func callAsFunction<C: ComputedState>(_ value: C.Value, into state: C.Type) {
-        return self(value, into: state.key())
+    func callAsFunction<C: AtomicState>(_ value: C.Value, into container: C.Type) {
+        return self(value, into: container.key())
     }
-
 }
