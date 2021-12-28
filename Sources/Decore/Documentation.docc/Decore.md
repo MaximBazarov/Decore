@@ -4,35 +4,34 @@ The scalable data layer for your applications.
 
 ## Overview
 
- The overview
+ TBD.
 
 ## Topics
 
 ### State Modeling
 
-- ``Container``
-- ``Computation``
-- ``GroupContainer``
+- ``AtomicState``
+- ``ComputedState``
+- ``GroupState``
 
 ### State Access
 
 - ``Observe``
 - ``Bind``
-- ``StorageFor``
 
 ### SwiftUI 
 - ``StatePreset``
 
-### Telemetry
-
-- ``Telemetry``
-- ``Context``
-
-- ``PublicData``
-- ``PublicTelemetryChannel``
-
-- ``SensitiveData``
-- ``SecureTelemetryChannel``
+<!--### Telemetry-->
+<!---->
+<!--- ``Telemetry``-->
+<!--- ``Context``-->
+<!---->
+<!--- ``PublicData``-->
+<!--- ``PublicTelemetryChannel``-->
+<!---->
+<!--- ``SensitiveData``-->
+<!--- ``SecureTelemetryChannel``-->
 
 
 

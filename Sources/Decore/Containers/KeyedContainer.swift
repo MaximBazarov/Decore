@@ -6,10 +6,11 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
+
+/// Entity that has a unique key.
 public protocol KeyedContainer {
 
-    /// Must return a unique key to store the value in the storage.
-    /// - Returns: ``Storage/Key``
+    /// Unique key to identify this entity.
     static func key() -> Storage.Key
 }
 

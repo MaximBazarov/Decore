@@ -1,0 +1,72 @@
+@Tutorial(time: 5) {
+    @Intro(title: "Declare your state using State Types.") {
+        @Image(source: "Decore-Logo-dark.png", alt: "NewSwiftUIApp-0")        
+    }
+    
+    @Section(title: "Modular state basics") {
+        @ContentAndMedia {
+            What is modular state and why we need it?            
+        }
+        
+        @Steps {
+            @Step {
+                The state is a piece of information your application uses to make 
+                decisions, what to show on the screen, what image to download, 
+                whether the user has access to the data, and many others.
+                Let's consider a simple example: a walking distance calculator 
+                that tells us what distance it would be for a given amount of 
+                steps.
+                @Image(source: "DistanceCalculator-app.png", 
+                       alt: "Distance calculator app")
+            }
+            @Step {                
+                To be able to make this application, we would need to operate 
+                with at least the following states: Number of steps, 
+                the step length and a total distance. 
+                At this stage, it doesn't matter where it is stored, 
+                memory, disc, or cloud. 
+                To build this app we will need to have these somewhere.
+                
+                @Image(source: "DistanceCalculator-state-layout.png", 
+                       alt: "State Layout for distance calculator")
+            }
+            @Step {
+                
+                One possible way of doing it in swift is to define variables in classes, but the problem is to access the value of these variables we now need to access classes themselves, e.g. pass data from one view to another.
+                
+                @Image(source: "NewSwiftUIApp-0.png", alt: "NewSwiftUIApp-0")
+            }
+            @Step {
+                
+                State types provide a way to define only the unique type for the data and to access data we need to only know the type name. Decore will take care of the storage of this data.
+                
+                @Image(source: "NewSwiftUIApp-0.png", alt: "NewSwiftUIApp-0")
+            }
+        
+            
+            
+        }
+    }
+    
+    @Section(title: "Atomic ") {
+        @ContentAndMedia {
+            ContentAndMedia.Text
+            
+            @Image(source: "NewSwiftUIApp-0.png", alt: "NewSwiftUIApp-0")
+        }
+        
+        @Steps {
+            @Step {
+                Steps.Step1.Text
+                
+                @Image(source: "NewSwiftUIApp-0.png", alt: "NewSwiftUIApp-0")
+            }
+            
+            @Step {
+                Steps.Step1.Text
+                
+                @Image(source: "NewSwiftUIApp-0.png", alt: "NewSwiftUIApp-0")
+            }
+        }
+    }
+}
