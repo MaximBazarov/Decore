@@ -13,7 +13,7 @@
 /// that sets other states using provided ``Storage/Writer``.
 /// Use provided ``Storage/Reader`` to access values of other states.
 ///
-/// Calculation and storage is the same as in ``ComputedState``.
+/// Calculation and storage is the same as in ``ComputedGroupState``.
 ///
 /// **Usage:**
 /// ```swift
