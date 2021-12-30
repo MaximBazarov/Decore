@@ -56,14 +56,14 @@ final class WritableComputedGroupState_BindTests: XCTestCase {
 
     // MARK: - Read -
 
-    func test_Bind_WritableComputedState_read_InitialValue_shouldReturnInitialValue() throws {
+    func test_Bind_WritableComputedGroupState_read_InitialValue_shouldReturnInitialValue() throws {
         let id = 333
         let expectedValue = A.initialValue(for: id) + B.initialValue(for: id)
         @Bind(containerTested, storage: storage) var result;
         XCTAssertEqual(result[id], expectedValue)
     }
 
-    func test_Bind_WritableComputedState_WriteValue_shouldReturnWrittenValue() throws {
+    func test_Bind_WritableComputedGroupState_WriteValue_shouldReturnWrittenValue() throws {
         let id = 334
         let newB = 34
         let expectedValue = A.initialValue(for: id) + newB

@@ -56,14 +56,14 @@ final class WritableComputedGroupState_RWTests: XCTestCase {
 
     // MARK: - Calculation -
 
-    func test_Reader_WritableComputedState_value_initialValuesAB_shouldReturnAPlusB() throws {
+    func test_Reader_WritableComputedGroupState_value_initialValuesAB_shouldReturnAPlusB() throws {
         let id = 99
         let expectedValue = A.initialValue(for: id) + B.initialValue(for: id)
         let result = read(containerTested, at: id)
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Reader_WritableComputedState_value_writeValuesAB_shouldReturnAPlusB() throws {
+    func test_Reader_WritableComputedGroupState_value_writeValuesAB_shouldReturnAPlusB() throws {
         let id = 101
         let a = 9
         let b = 22
@@ -76,7 +76,7 @@ final class WritableComputedGroupState_RWTests: XCTestCase {
 
     // MARK: - Recalculation -
 
-    func test_Reader_WritableComputedState_value_readInitial_setNewB_shouldReturnAPlusUpdatedB() throws {
+    func test_Reader_WritableComputedGroupState_value_readInitial_setNewB_shouldReturnAPlusUpdatedB() throws {
         let id = 111
         let newB = 11
         write(newB, into: B.self, at: id)
@@ -87,7 +87,7 @@ final class WritableComputedGroupState_RWTests: XCTestCase {
 
     // MARK: - Writing -
 
-    func test_Writer_WritableComputedState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
+    func test_Writer_WritableComputedGroupState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
         let id = 122
         let newB = 32
         let expectedValue = A.initialValue(for: id) + newB

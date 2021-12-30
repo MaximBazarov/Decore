@@ -1,5 +1,5 @@
 //
-//  WritableComputedState+Bind.swift
+//  WritableComputedGroupState+Bind.swift
 //  Decore
 //
 //  Created by Maxim Bazarov
