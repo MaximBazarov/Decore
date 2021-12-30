@@ -38,14 +38,14 @@ final class ComputedGroupState_RWTests: XCTestCase {
 
     // MARK: - Reader -
 
-    func test_Reader_callAsFunction_Atom_shouldReturnInitialValue() throws {
+    func test_Reader_ComputedGroupState_callAsFunction_Atom_shouldReturnInitialValue() throws {
         let id = 1
         let expectedValue = id * A.initialValue()
         let result = read(containerTested, at: id)
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Reader_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
+    func test_Reader_ComputedGroupState_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
         let id = 2
         let newA = 20
         let expectedValue = id * newA
@@ -56,7 +56,7 @@ final class ComputedGroupState_RWTests: XCTestCase {
 
     // MARK: - Writer -
 
-    func test_Writer_callAsFunction_Atom_shouldReturnWrittenValue() throws {
+    func test_Writer_ComputedGroupState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
         let id = 3
         let newA = 30
         let expectedValue = id * newA

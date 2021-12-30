@@ -44,14 +44,14 @@ final class ComputedGroupState_ObserveTests: XCTestCase {
 
     // MARK: - Read -
 
-    func test_Observe_ComputedState_InitialValues_shouldReturnInitialValuesSum() throws {
+    func test_Observe_ComputedGroupState_InitialValues_shouldReturnInitialValuesSum() throws {
         let id = 2
         let expectedValue = A.initialValue() + B.initialValue() * id
         @Observe(containerTested, storage: storage) var result;
         XCTAssertEqual(result[id], expectedValue)
     }
 
-    func test_Observe_ComputedState_WrittenBValue_shouldReturnSumOfABValues() throws {
+    func test_Observe_ComputedGroupState_WrittenBValue_shouldReturnSumOfABValues() throws {
         let id = 3
         let newB = 9
         let expectedValue = A.initialValue() + newB * id
