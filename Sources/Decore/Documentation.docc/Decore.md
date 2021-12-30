@@ -8,13 +8,18 @@ The scalable data layer for your applications.
 
 ## Topics
 
-### State Modeling
+### Basic State Modeling
 
 - ``AtomicState``
-- ``ComputedState``
-- ``WritableComputedState``
 - ``GroupState``
+
+### Computed States
+- ``ComputedState``
 - ``ComputedGroupState``
+
+### Writable Computed States
+- ``WritableComputedState``
+- ``WritableComputedGroupState``
 
 ### State Access
 

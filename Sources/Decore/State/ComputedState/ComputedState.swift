@@ -7,33 +7,33 @@
 //
 
 /// ComputedState calculates its value based on other states.
+/// It calculates the value exactly like ``ComputedGroupState``.
 ///
-/// Define the ``ComputedState/value(read:)`` function that provides
-/// a ``Storage/Reader`` to access values of other states.
-/// When the value is read, ``Storage`` will add this ``ComputedState``
-/// as a depender, recalculating the ``ComputedState`` value when one or many
-/// dependencies are updated.
-///
-/// **Storing value:**
-/// if ``ComputedState/shouldStoreComputedValue()-bjf6`` returns true,
-/// the computed value will be written into the ``Storage``
-/// after the recalculation.
-/// Default value is `true`.
-///
+/// Define the ``WritableComputedGroupState/setValue(_:at:read:write:)`` 
+/// to set states values using provided `write` function.
+
 /// **Usage:**
 /// ```swift
-/// struct Sum: ComputedState {
-///     typealias Value = Int
-///     static func value(read: Storage.Reader) -> Value {
+/// struct Sum: WritableComputedGroupState {
+///     typealias Element = Int
+///     typealias ID = Int
+///
+///     static func value(at id: Int, read: Storage.Reader) -> Int {
+///         return read(A.self, at: id) + read(B.self, at: id)
+///     }
+///
+///     static func setValue(_ value: Int, at id: Int, read: Storage.Reader, write: Storage.Writer) {
 ///         let a = read(A.self)
-///         let b = read(B.self)
-///         return a + b
+///         let newValueOfB = value - a
+///         write(newValueOfB, into: B.self, at: id)
 ///     }
 /// }
+///
 /// ```
-/// In this example computed state is a sum of `A` and `B` states.
-/// If `A` or/and `B` states are updated, `Sum` state value will be recalculated
-/// using ``ComputedState/value(read:)`` function.
+/// In this `Sum` is a sum of of `A` and `B` states,
+/// where `B` is a ``GroupState`` too that are also a group states.
+/// When value is assigned to ``Sum`` it keeps the `A` value unchanged,
+/// and calculates an appropriate value for `B` at id.
 ///
 public protocol ComputedState: ValueContainer, KeyedContainer {
 
