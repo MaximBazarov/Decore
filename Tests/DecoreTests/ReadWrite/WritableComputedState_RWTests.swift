@@ -77,12 +77,12 @@ final class WritableComputedState_RWTests: XCTestCase {
     // MARK: - Writing -
 
     func test_Writer_WritableComputedState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
-        let newA = 12
-        let expectedValue = newA + B.initialValue()
+        let newB = 12
+        let expectedValue = A.initialValue() + newB
         write(expectedValue, into: containerTested)
         XCTAssertEqual(read(containerTested), expectedValue)
-        XCTAssertEqual(read(A.self), newA)
-        XCTAssertEqual(read(B.self), expectedValue - newA)
+        XCTAssertEqual(read(A.self), A.initialValue())
+        XCTAssertEqual(read(B.self), newB)
     }
 
 }
