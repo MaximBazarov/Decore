@@ -34,7 +34,9 @@
 ///
 public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
 
+    /// Type of the wrapped value.
     associatedtype Element
+
     /// Unique identifier in addition to the group type name.
     associatedtype ID: Hashable
 
@@ -47,7 +49,7 @@ public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupO
     /// Called when storage needs a value.
     /// For example when value hasn't been written yet,
     /// storage will call this function to get the initial value.
-    /// - Returns: ``Value``
+    /// - Returns: ``Element``
     static func initialValue(for id: ID) -> Element
 
     // Group proxy

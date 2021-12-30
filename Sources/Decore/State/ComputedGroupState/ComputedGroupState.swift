@@ -52,7 +52,9 @@
 ///
 public protocol ComputedGroupState: ValueContainer, KeyedContainer where Value == GroupOf<ID, Element> {
 
+    /// Type of the wrapped value.
     associatedtype Element
+    
     /// Unique identifier in addition to the group type name.
     associatedtype ID: Hashable
 
