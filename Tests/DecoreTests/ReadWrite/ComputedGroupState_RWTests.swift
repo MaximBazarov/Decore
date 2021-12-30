@@ -9,12 +9,20 @@ import XCTest
 import Decore
 
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-final class GroupState_RWTests: XCTestCase {
+final class ComputedGroupState_RWTests: XCTestCase {
 
-    struct G: GroupState {
+
+    struct A: AtomicState {
+        typealias Value = Int
+        static var initialValue: () -> Int = { 10 }
+    }
+
+    struct G: ComputedGroupState {
         typealias Element = Int
         typealias ID = Int
-        static func initialValue(for id: Int) -> Int { 0 }
+        static func value(at id: Int, read: Storage.Reader) -> Int {
+            return id * read(A.self)
+        }
     }
 
     let containerTested = G.self
@@ -30,27 +38,29 @@ final class GroupState_RWTests: XCTestCase {
 
     // MARK: - Reader -
 
-    func test_Reader_GroupState_callAsFunction_Atom_shouldReturnInitialValue() throws {
+    func test_Reader_ComputedGroupState_callAsFunction_Atom_shouldReturnInitialValue() throws {
         let id = 1
-        let expectedValue = containerTested.initialValue(for: id)
+        let expectedValue = id * A.initialValue()
         let result = read(containerTested, at: id)
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Reader_GroupState_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
+    func test_Reader_ComputedGroupState_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
         let id = 2
-        let expectedValue = 7
-        write(expectedValue, into: containerTested, at: id)
+        let newA = 20
+        let expectedValue = id * newA
+        write(newA, into: A.self)
         let result = read(containerTested, at: id)
         XCTAssertEqual(result, expectedValue)
     }
 
     // MARK: - Writer -
 
-    func test_Writer_GroupState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
+    func test_Writer_ComputedGroupState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
         let id = 3
-        let expectedValue = 8
-        write(expectedValue, into: containerTested, at: id)
+        let newA = 30
+        let expectedValue = id * newA
+        write(newA, into: A.self)
         let result = read(containerTested, at: id)
         XCTAssertEqual(result, expectedValue)
     }

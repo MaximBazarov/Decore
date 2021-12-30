@@ -29,13 +29,13 @@ final class AtomicState_RWTests: XCTestCase {
 
     // MARK: - Reader -
 
-    func test_Reader_callAsFunction_Atom_shouldReturnInitialValue() throws {
+    func test_Reader_AtomicState_callAsFunction_Atom_shouldReturnInitialValue() throws {
         let expectedValue = A.initialValue()
         let result = read(containerTested)
         XCTAssertEqual(result, expectedValue)
     }
 
-    func test_Reader_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
+    func test_Reader_AtomicState_callAsFunction_Atom_PresetValue_shouldReturnWrittenValue() throws {
         let expectedValue = 7
         write(expectedValue, into: containerTested)
         let result = read(containerTested)
@@ -44,7 +44,7 @@ final class AtomicState_RWTests: XCTestCase {
 
     // MARK: - Writer -
 
-    func test_Writer_callAsFunction_Atom_shouldReturnWrittenValue() throws {
+    func test_Writer_AtomicState_callAsFunction_Atom_shouldReturnWrittenValue() throws {
         let expectedValue = 8
         write(expectedValue, into: containerTested)
         let result = read(containerTested)

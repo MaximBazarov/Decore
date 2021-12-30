@@ -13,6 +13,7 @@ The scalable data layer for your applications.
 - ``AtomicState``
 - ``ComputedState``
 - ``GroupState``
+- ``ComputedGroupState``
 
 ### State Access
 

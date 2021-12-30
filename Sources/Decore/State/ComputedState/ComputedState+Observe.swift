@@ -32,7 +32,6 @@ extension Observe {
             owner: depender
         )
         fallbackValue = { state.value(read: reader) }
-        shouldPreserveFallbackValue = true
-
+        shouldPreserveFallbackValue = C.shouldStoreComputedValue()
     }
 }
