@@ -26,7 +26,11 @@ internal class Transaction {
         let value: Value = {
             if let local = values[destinationKey] as? Value { return local }
             if let global = storage?.values[destinationKey] as? Value { return global }
-            return fallbackValue()
+
+            // Initial value
+            let value = fallbackValue()
+            values[destinationKey] = value
+            return value
         }()
         insertDependency(readerKey, for: destinationKey)
         return value
