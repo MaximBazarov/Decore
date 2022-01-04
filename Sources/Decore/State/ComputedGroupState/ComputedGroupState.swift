@@ -96,20 +96,15 @@ public extension ComputedGroupState where Value == GroupOf<ID, Element> {
 
     static func getValue(for id: ID, context: Context, in storage: Storage) -> Element {
         let elementKey = key(for: id)
-        let groupKey = key()
-        let depender = elementKey
         let reader = Storage.Reader(
             context: context,
-            storage: storage,
-            owner: depender
-        )
+            storage: storage)
+
         return storage.readValue(
             at: elementKey,
+            readerContext: context,
             fallbackValue: { value(at: id, read: reader) },
-            context: context,
-            shouldStoreFallbackValue: true,
-            depender: groupKey
-        )
+            persistFallbackValue: Self.shouldStoreComputedValue())
     }
 
     static func shouldStoreComputedValue() -> Bool { true }

@@ -13,26 +13,28 @@ internal class Transaction {
     typealias Key = Storage.Key
 
     weak var storage: Storage?
+    let context: Context
 
-    internal var values: [Key: Any] = [:]
-    internal var dependenciesOf: [Key: Set<Key>] = [:]
+    var values: [Key: Any] = [:]
+    var dependenciesOf: [Key: Set<Key>] = [:]
 
-    internal func readValue<Value>(
-        at destination: Key,
-        fallbackValue: () -> Value,
-        depender: Key? = nil
+    func readValue<Value>(
+        at destinationKey: Key,
+        readerKey: Key?,
+        fallbackValue: () -> Value
     ) -> Value {
         let value: Value = {
-            if let local = values[destination] as? Value { return local }
-            if let global = storage?.values[destination] as? Value { return global }
+            if let local = values[destinationKey] as? Value { return local }
+            if let global = storage?.values[destinationKey] as? Value { return global }
             return fallbackValue()
         }()
-        insertDependency(depender, for: destination)
+        insertDependency(readerKey, for: destinationKey)
         return value
     }
 
-    init(_ storage: Storage) {
+    init(_ storage: Storage, context: Context) {
         self.storage = storage
+        self.context = context
     }
 
     func insertDependency(_ depender: Key?, for key: Key) {

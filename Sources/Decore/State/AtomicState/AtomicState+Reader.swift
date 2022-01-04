@@ -17,7 +17,10 @@ public extension Storage.Reader {
     /// ```
     ///
     func callAsFunction<C: AtomicState>(_ state: C.Type) -> C.Value {
-        return self(state.key(), fallbackValue: state.initialValue)
+        self.callAsFunction(
+            state.key(),
+            fallbackValue: state.initialValue,
+            preserveFallbackValue: true)
     }
 
 }

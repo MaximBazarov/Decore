@@ -35,25 +35,32 @@ import Combine
 @propertyWrapper
 public struct Bind<Value>: DynamicProperty {
 
-    @ObservedObject var observation = ObservableStorageObject()
+    internal init(key: Storage.Key, context: Context, fallbackValue: @escaping () -> Value, shouldPreserveFallbackValue: Bool, storage: Storage) {
+        let observation = ObservableStorageObject()
+        self.key = key
+        self.context = context.appending(observationID: observation.id)
+        self.fallbackValue = fallbackValue
+        self.shouldPreserveFallbackValue = shouldPreserveFallbackValue
+        self.storage = storage
+        self.observation = observation
+    }
+
+    @ObservedObject var observation: ObservableStorageObject
 
     internal let key: Storage.Key
-    internal let depender: Storage.Key?
+    internal let context: Context
     internal let fallbackValue: () -> Value
     internal let shouldPreserveFallbackValue: Bool
-    internal let context: Context
+
     internal let storage: Storage
 
     public var wrappedValue: Value {
         get {
-            storage.insertObservation(observation, for: key, context: context)
-            return storage.readValue(
+            storage.readValue(
                 at: key,
+                readerContext: context,
                 fallbackValue: fallbackValue,
-                context: context,
-                shouldStoreFallbackValue: shouldPreserveFallbackValue,
-                depender: depender
-            )
+                persistFallbackValue: shouldPreserveFallbackValue)
         }
         nonmutating set {
             storage.write(value: newValue, atKey: key)
@@ -66,6 +73,8 @@ public struct Bind<Value>: DynamicProperty {
             set: { wrappedValue = $0 }
         )
     }
+
+
 
 }
 

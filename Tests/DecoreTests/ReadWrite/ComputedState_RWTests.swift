@@ -34,9 +34,12 @@ final class ComputedState_RWTests: XCTestCase {
     var storage: Storage!
 
     override func setUp() {
+        // We append the reader information since
+        // it's required for computations to operate
+        let testContext = Context.here().appending(key: Sum.key())
         storage = Storage()
-        read = Storage.Reader(context: .here(), storage: storage, owner: Sum.key())
-        write = Storage.Writer(context: .here(), storage: storage, owner: Sum.key())
+        read = Storage.Reader(context: testContext, storage: storage)
+        write = Storage.Writer(context: testContext, storage: storage)
     }
 
     // MARK: - Calculation -

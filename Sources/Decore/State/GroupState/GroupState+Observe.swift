@@ -18,14 +18,24 @@ public extension Observe {
     )
     where G.Value == Value
     {
-        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        self.context = context
-        key = state.key()
-        depender = nil
-        shouldPreserveFallbackValue = true
+        let context = Context(
+            key: nil,
+            observationID: nil, // doesn't exist yet
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
         let storage = storage ?? StorageFor(Self.self).wrappedValue
-        fallbackValue = { state.initialValue(context: context, in: storage) }
-        self.storage = storage
+
+        self.init(
+            key: state.key(),
+            context: context,
+            fallbackValue: {
+                state.initialValue(context: context, in: storage)
+            },
+            shouldPreserveFallbackValue: true,
+            storage: storage)
     }
 
 }

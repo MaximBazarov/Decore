@@ -13,6 +13,8 @@
 /// and ``didChangeValue()-2jxs5`` get called.
 public protocol StorageObservation: AnyObject {
 
+    typealias ID = ObjectIdentifier
+
     /// Called before the observed value changes
     func willChangeValue()
 
@@ -30,5 +32,5 @@ public extension StorageObservation {
 public extension StorageObservation {
 
     /// Unique identifier of the observation
-    var id: ObjectIdentifier { ObjectIdentifier(self) }
+    var id: ID { ObjectIdentifier(self) }
 }

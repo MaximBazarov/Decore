@@ -36,7 +36,7 @@ public final class Storage {
 
     let transactionStarted = Telemetry.SensitiveEvent("transaction-started")
     let transactionFinished = Telemetry.SensitiveEvent("transaction-finished")
-    
+
     /// Reads the value from storage.
     /// Uses `fallbackValue` in cases when value isn't in storage.
     /// if `shouldStoreFallbackValue` is `true` writes `fallbackValue` into storage
@@ -44,33 +44,52 @@ public final class Storage {
     /// - Returns: Value
     internal func readValue<Value>(
         at destination: Key,
+        readerContext: Context,
         fallbackValue: () -> Value,
-        context: Context,
-        shouldStoreFallbackValue: Bool = true,
-        depender: Key? = nil
+        persistFallbackValue: Bool
     ) -> Value {
-        if let transaction = transaction {
-            return transaction.readValue(
+
+        var transactionalValue: Value {
+            self.transaction!.readValue(
                 at: destination,
-                fallbackValue: fallbackValue,
-                depender: depender)
-        }
-        else {
-            let transaction = Transaction(self)
-            self.transaction = transaction
-            let value = transaction.readValue(
-                at: destination,
+                readerKey: readerContext.key,
                 fallbackValue: fallbackValue)
-            mergeValues(of: transaction, into: self)
-            mergeDependencies(of: transaction, into: self)
-            var updatedKeys = Set(transaction.values.keys)
-            if let depender = depender { updatedKeys.remove(depender) }
-//            notify(updatedKeys)
-            self.transaction = nil
+        }
+
+        if transaction == nil {
+            let transaction = Transaction(self, context: readerContext)
+            self.transaction = transaction
+            let value = transactionalValue
+            merge(transaction: transaction)
             return value
         }
 
+        return transactionalValue
    }
+
+    // MARK: - Transaction Integration -
+    private func merge(transaction: Transaction) {
+        mergeDependencies(of: transaction, into: self)
+
+        let updatedKeys = Set(transaction.values.keys)
+        // Reduce to unique values
+        let observationsToNotify: [StorageObservation] = updatedKeys
+            .reduce(into: [:], { partialResult, key in
+                observations(of: key).forEach { observation in
+                    guard observation.id != transaction.context.observationID else { return }
+                    partialResult[observation.id] = observation
+                }
+            })
+            .values.map{ $0 }
+
+        notifyWillChangeValue(observationsToNotify)
+
+        mergeValues(of: transaction, into: self)
+
+        notifyDidChangeValue(observationsToNotify)
+
+        self.transaction = nil
+    }
 
     func mergeValues(of transaction: Transaction, into storage: Storage) {
         transaction.values.forEach { key, value in
@@ -80,24 +99,12 @@ public final class Storage {
 
     // MARK: - Observations -
 
-    /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
-    func insertObservation(_ observation: StorageObservation, for container: Key, context: Context) {
-        observations[container, default: ObservationStorage()].insert(observation)
+    func observations(of keys: Set<Key>) -> [StorageObservation] {
+        keys.flatMap { observations(of: $0) }
     }
 
-    func observations(of keys: Set<Key>) -> Set<ObjectIdentifier> {
-        var result = Set<ObjectIdentifier>()
-        keys.forEach { key in
-            observations(of: key).forEach {
-                result.insert($0)
-            }
-        }
-        return result
-    }
-
-    func observations(of key: Key) -> Set<ObjectIdentifier> {
-        guard let observationStorage = observations[key] else { return [] }
-        return observationStorage.observations.valid
+    func observations(of key: Key) -> [StorageObservation] {
+        return observations[key]?.observations.values.map{ $0 } ?? []
     }
 
     func mergeDependencies(of transaction: Transaction, into storage: Storage) {
@@ -108,15 +115,30 @@ public final class Storage {
         }
     }
 
-    func notify(observations: Set<StorageObservation>)
+    // MARK: Observation Notifications
+
+    private func notifyWillChangeValue(_ observations: [StorageObservation]) {
+        observations.forEach { observation in
+            observation.willChangeValue()
+        }
+    }
+
+    private func notifyDidChangeValue(_ observations: [StorageObservation]) {
+        observations.forEach { observation in
+            observation.didChangeValue()
+        }
+    }
+
+
+//    func notify(observations: Set<StorageObservation>)
 
     // MARK: - Write -
 
     internal func write(value: Any, atKey destination: Key) {
-        willChangeValue(destination)
+//        willChangeValue(destination)
         invalidateValueDependencies(at: destination)
         values[destination] = value
-        didChangeValue(destination)
+//        didChangeValue(destination)
     }
 
     private func invalidateValueDependencies(at key: Storage.Key) {
@@ -125,16 +147,6 @@ public final class Storage {
         }
     }
 
-    private func willChangeValue(_ destination: Key) {
-        observations[destination]?.willChangeValue()
-        for dependency in dependencies[destination] ?? [] {
-            observations[dependency]?.willChangeValue()
-        }
-    }
-
-    private func didChangeValue(_ destination: Key) {
-        observations[destination]?.didChangeValue()
-    }
 }
 
 

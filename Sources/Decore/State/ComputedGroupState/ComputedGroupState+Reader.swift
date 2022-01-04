@@ -17,7 +17,10 @@ public extension Storage.Reader {
     /// ```
     ///
     func callAsFunction<CG: ComputedGroupState>(_ state: CG.Type, at id: CG.ID) -> CG.Element {
-        return self(state.key(), fallbackValue: { state.value(at: id, read: self) })
+        self.callAsFunction(
+            state.key(),
+            fallbackValue: { state.value(at: id, read: self) },
+            preserveFallbackValue: CG.shouldStoreComputedValue())
     }
 
 }

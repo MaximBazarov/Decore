@@ -18,13 +18,23 @@ extension Bind {
     )
     where WCGS.Value == Value
     {
-        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        self.context = context
-        key = state.key()
-        depender = state.key()
-        shouldPreserveFallbackValue = WCGS.shouldStoreComputedValue()
+        let context = Context(
+            key: state.key(),
+            observationID: nil, // doesn't exist yet
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
         let storage = storage ?? StorageFor(Self.self).wrappedValue
-        fallbackValue = { state.initialValue(context: context, in: storage) }
-        self.storage = storage
+
+        self.init(
+            key: state.key(),
+            context: context,
+            fallbackValue: {
+                state.initialValue(context: context, in: storage)
+            },
+            shouldPreserveFallbackValue: WCGS.shouldStoreComputedValue(),
+            storage: storage)
     }
 }

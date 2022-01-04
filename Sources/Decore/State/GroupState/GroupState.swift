@@ -54,7 +54,13 @@ public protocol GroupState: ValueContainer, KeyedContainer where Value == GroupO
 
     // Group proxy
     static func initialValue(context: Context, in storage: Storage) -> Value
-    static func getValue(for id: ID, context: Context, in storage: Storage) -> Element
+
+    static func getValue(
+        at id: ID,
+        from storage: Storage,
+        readerContext: Context
+    ) -> Element
+
     static func setValue(_ value: Element, for id: ID, context: Context, in storage: Storage)
 }
 
@@ -71,21 +77,23 @@ public extension GroupState where Value == GroupOf<ID, Element> {
 
     static func initialValue(context: Context, in storage: Storage) -> Value {
         GroupOf<Self.ID, Self.Element> (
-            get: { id in getValue(for: id, context: context, in: storage) },
+            get: { id in getValue(at: id, from: storage, readerContext: context) },
             set: { element, id in setValue(element, for: id, context: context, in: storage) }
         )
     }
 
-    static func getValue(for id: ID, context: Context, in storage: Storage) -> Element {
+    static func getValue(
+        at id: ID,
+        from storage: Storage,
+        readerContext: Context
+        ) -> Element
+    {
         let elementKey = key(for: id)
-        let groupKey = key()
         return storage.readValue(
             at: elementKey,
+            readerContext: readerContext,
             fallbackValue: { initialValue(for: id) },
-            context: context,
-            shouldStoreFallbackValue: true,
-            depender: groupKey
-        )
+            persistFallbackValue: true)
     }
 
     static func setValue(_ value: Element, for id: ID, context: Context, in storage: Storage)  {

@@ -16,7 +16,10 @@ public extension Storage.Reader {
     /// ```
     ///
     func callAsFunction<G: GroupState>(_ state: G.Type, at id: G.ID) -> G.Element {
-        return self(state.key(for: id), fallbackValue: { state.initialValue(for: id) } )
+        self.callAsFunction(
+            state.key(for: id),
+            fallbackValue: { state.initialValue(for: id) },
+            preserveFallbackValue: true)
     }
 
 }

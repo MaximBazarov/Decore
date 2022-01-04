@@ -14,7 +14,7 @@ class TransactionTests: XCTestCase {
     // MARK: - Dependencies -
 
     func test_Transaction_addDependencies_shouldContainAddedDependencies() throws {
-        let transaction = Transaction(Storage())
+        let transaction = Transaction(Storage(), context: .here())
         let target = Storage.Key.container("target")
         let depender1 = Storage.Key.container("depender1")
         let depender2 = Storage.Key.container("depender2")
@@ -37,20 +37,22 @@ class TransactionTests: XCTestCase {
         let depender1 = Storage.Key.container("depender1")
         let depender2 = Storage.Key.container("depender2")
         let storage = Storage()
-        let transaction = Transaction(storage)
+        let transaction = Transaction(storage, context: .here())
         _ = transaction.readValue(
             at: container,
-            fallbackValue: { 0 },
-            depender: depender1)
+            readerKey: depender1,
+            fallbackValue: { 1 })
         _ = transaction.readValue(
             at: container,
-            fallbackValue: { 0 },
-            depender: depender2)
+            readerKey: depender2,
+            fallbackValue: { 2 })
+
         XCTAssertTrue(
             transaction
                 .dependenciesOf[container, default: []]
                 .contains(depender1)
         )
+
         XCTAssertTrue(
             transaction
                 .dependenciesOf[container, default: []]
@@ -61,18 +63,20 @@ class TransactionTests: XCTestCase {
     // MARK: - Read -
 
     func test_Transaction_read_Empty_Read_returnsFallbackValue() throws {
+        let container = Storage.Key.container(String(describing: self))
         let expected = { 890 }
-        let transaction = Transaction(Storage())
+        let transaction = Transaction(Storage(), context: .here())
         let result = transaction.readValue(
-            at: .container("test"),
-            fallbackValue: expected)
+            at: container, readerKey: nil,
+            fallbackValue: expected
+        )
         XCTAssertEqual(expected(), result)
     }
 
     func test_Transaction_read_StorageHasValue_Read_returnsStorageValue() throws {
         let container = Storage.Key.container(String(describing: self))
         let storage = Storage()
-        let transaction = Transaction(storage)
+        let transaction = Transaction(storage, context: .here())
 
         let fallbackValue = { -900 }
         let storageValue = 9001
@@ -81,6 +85,7 @@ class TransactionTests: XCTestCase {
 
         let result = transaction.readValue(
             at: container,
+            readerKey: nil,
             fallbackValue: fallbackValue)
 
         XCTAssertEqual(result, storageValue)
@@ -89,7 +94,7 @@ class TransactionTests: XCTestCase {
     func test_Transaction_read_BothStorageAndTransactionHaveValues_Read_returnsTransactionValue() throws {
         let container = Storage.Key.container(String(describing: self))
         let storage = Storage()
-        let transaction = Transaction(storage)
+        let transaction = Transaction(storage, context: .here())
 
         let transactionValue = 9087
         let fallbackValue = { -900 }
@@ -100,11 +105,21 @@ class TransactionTests: XCTestCase {
 
         let result = transaction.readValue(
             at: container,
+            readerKey: nil,
             fallbackValue: fallbackValue)
 
         XCTAssertEqual(result, transactionValue)
     }
 
     // MARK: - Write -
+
+    func test_Transaction_readValue_NoValuesStorage_writesInitialValues_writtenValuesShouldBeInUpdatedValues() throws {
+        let storage = Storage()
+        let transaction = Transaction(storage, context: .here())
+        let expected = 0
+        let target = Storage.Key.container(String(describing: self))
+        _ = transaction.readValue(at: target, readerKey: nil, fallbackValue: { expected })
+        XCTAssertEqual(transaction.values[target] as? Int, expected)
+    }
 
 }

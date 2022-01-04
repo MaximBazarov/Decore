@@ -17,7 +17,11 @@ public extension Storage.Reader {
     /// ```
     ///
     func callAsFunction<C: ComputedState>(_ state: C.Type) -> C.Value {
-        return self(state.key(), fallbackValue: { state.value(read: self) })
+        self.callAsFunction(
+            state.key(),
+            fallbackValue: { state.value(read: self) },
+            preserveFallbackValue: C.shouldStoreComputedValue()
+        )
     }
 
 }
