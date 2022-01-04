@@ -18,6 +18,7 @@ final class StorageObservationTests: XCTestCase {
             ""
         }
     }
+
     class Observation: StorageObservation {
         func willChangeValue() {}
     }

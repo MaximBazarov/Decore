@@ -26,7 +26,7 @@ extension Storage {
         }
 
         func didChangeValue() {
-            let (toDispose, toNotify) = splitDisposeFromNotify( )
+            let (toDispose, toNotify) = observations( )
             toNotify.forEach { id in
                 guard let observation = observationStorage[id]?.value
                 else { return }
@@ -38,7 +38,7 @@ extension Storage {
         }
 
         func willChangeValue() {
-            let (toDispose, toNotify) = splitDisposeFromNotify( )
+            let (toDispose, toNotify) = observations( )
             toNotify.forEach { id in
                 guard let observation = observationStorage[id]?.value
                 else { return }
@@ -49,22 +49,27 @@ extension Storage {
             }
         }
 
+
+        typealias Observations = (
+            valid: Set<ObjectIdentifier>,
+            invalid: Set<ObjectIdentifier>
+        )
         /// Enumerates all the observation inserting them into two sets:
         /// - The observations to notify
         /// - The observation to remove from further notifications,
         /// because they were deallocated.
         /// - Returns: (toDispose, toNotify) each is of type Set of ``WeakObservation``
-        func splitDisposeFromNotify() -> (Set<ObjectIdentifier>, Set<ObjectIdentifier>) {
-            var toDispose = Set<ObjectIdentifier>()
-            var toNotify = Set<ObjectIdentifier>()
+        var observations: Observations {
+            var invalid = Set<ObjectIdentifier>()
+            var valid = Set<ObjectIdentifier>()
             observationStorage.forEach { id, weakRef in
                 if weakRef.value == nil {
-                    toDispose.insert(id)
+                    invalid.insert(id)
                     return
                 }
-                toNotify.insert(id)
+                valid.insert(id)
             }
-            return (toDispose, toNotify)
+            return (valid: valid, invalid: invalid)
         }
 
 

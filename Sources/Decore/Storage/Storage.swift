@@ -6,6 +6,8 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
+import Darwin
+
 /// **TBD**: Storage for ``AtomicState``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
 /// When value of one ``AtomicState`` changes, storage enumerates through all dependencies
@@ -21,27 +23,14 @@ public final class Storage {
 
     public init() {}
 
-    /// Raw storage with all the ``Container``s
-    var storage: [Key: Any] = [:]
+    /// Values in storage
+    var values: [Key: Any] = [:]
 
     /// TBD
-    var dependencies: [Key: [Key]] = [:]
+    var dependencies: [Key: Set<Key>] = [:]
 
     /// Raw storage with all the ``Observation``s
     var observations: [Storage.Key: ObservationStorage] = [:]
-
-    /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
-    func insertObservation(_ observation: StorageObservation, for container: Key, context: Context) {
-        let observationStorage = observations[container, default: ObservationStorage()]
-        observationStorage.insert(observation)
-        observations[container] = observationStorage
-    }
-
-    func insertDependency(_ depender: Key, for key: Key) {
-        var dependencies = self.dependencies[key, default: []]
-        dependencies.append(depender)
-        self.dependencies[key] = dependencies
-    }
 
     var transaction: Transaction?
 
@@ -60,31 +49,79 @@ public final class Storage {
         shouldStoreFallbackValue: Bool = true,
         depender: Key? = nil
     ) -> Value {
-        if let depender = depender {
-            insertDependency(depender, for: destination)
+        if let transaction = transaction {
+            return transaction.readValue(
+                at: destination,
+                fallbackValue: fallbackValue,
+                depender: depender)
         }
-        guard let value = storage[destination] as? Value
         else {
-            let newValue = fallbackValue()
-            if shouldStoreFallbackValue {
-                storage[destination] = newValue
-                invalidateValueDependencies(at: destination)
-            }
-            return newValue
+            let transaction = Transaction(self)
+            self.transaction = transaction
+            let value = transaction.readValue(
+                at: destination,
+                fallbackValue: fallbackValue)
+            mergeValues(of: transaction, into: self)
+            mergeDependencies(of: transaction, into: self)
+            var updatedKeys = Set(transaction.values.keys)
+            if let depender = depender { updatedKeys.remove(depender) }
+//            notify(updatedKeys)
+            self.transaction = nil
+            return value
         }
-        return value
+
+   }
+
+    func mergeValues(of transaction: Transaction, into storage: Storage) {
+        transaction.values.forEach { key, value in
+            storage.values[key] = value
+        }
     }
+
+    // MARK: - Observations -
+
+    /// Inserts ``Observation`` into ``ObservationStorage`` for given container ``Key``
+    func insertObservation(_ observation: StorageObservation, for container: Key, context: Context) {
+        observations[container, default: ObservationStorage()].insert(observation)
+    }
+
+    func observations(of keys: Set<Key>) -> Set<ObjectIdentifier> {
+        var result = Set<ObjectIdentifier>()
+        keys.forEach { key in
+            observations(of: key).forEach {
+                result.insert($0)
+            }
+        }
+        return result
+    }
+
+    func observations(of key: Key) -> Set<ObjectIdentifier> {
+        guard let observationStorage = observations[key] else { return [] }
+        return observationStorage.observations.valid
+    }
+
+    func mergeDependencies(of transaction: Transaction, into storage: Storage) {
+        transaction.dependenciesOf.forEach { key, dependents in
+            dependents.forEach { depender in
+                dependencies[key, default: []].insert(depender)
+            }
+        }
+    }
+
+    func notify(observations: Set<StorageObservation>)
+
+    // MARK: - Write -
 
     internal func write(value: Any, atKey destination: Key) {
         willChangeValue(destination)
         invalidateValueDependencies(at: destination)
-        storage[destination] = value
+        values[destination] = value
         didChangeValue(destination)
     }
 
     private func invalidateValueDependencies(at key: Storage.Key) {
         for depender in dependencies[key] ?? [] {
-            storage.removeValue(forKey: depender)
+            values.removeValue(forKey: depender)
         }
     }
 
