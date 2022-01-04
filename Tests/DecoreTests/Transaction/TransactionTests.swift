@@ -119,7 +119,6 @@ class TransactionTests: XCTestCase {
         let expected = 0
         let target = Storage.Key.container(String(describing: self))
         _ = transaction.readValue(at: target, readerKey: nil, fallbackValue: { expected })
-        // we need to write initital value into transaction before return
         XCTAssertEqual(transaction.values[target] as? Int, expected)
     }
 
