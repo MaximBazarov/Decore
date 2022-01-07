@@ -6,8 +6,6 @@
 //  Copyright © 2020 Maxim Bazarov
 //
 
-import Darwin
-
 /// **TBD**: Storage for ``AtomicState``s.
 /// Each time the value is read from the storage, it builds a dependency graph.
 /// When value of one ``AtomicState`` changes, storage enumerates through all dependencies
@@ -130,15 +128,11 @@ public final class Storage {
     }
 
 
-//    func notify(observations: Set<StorageObservation>)
-
     // MARK: - Write -
 
     internal func write(value: Any, atKey destination: Key) {
-//        willChangeValue(destination)
         invalidateValueDependencies(at: destination)
         values[destination] = value
-//        didChangeValue(destination)
     }
 
     private func invalidateValueDependencies(at key: Storage.Key) {
