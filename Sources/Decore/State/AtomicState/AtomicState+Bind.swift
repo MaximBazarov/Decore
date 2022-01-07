@@ -18,11 +18,21 @@ extension Bind {
     )
     where A.Value == Value
     {
-        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        key = state.key()
-        fallbackValue = state.initialValue
-        depender = nil
-        shouldPreserveFallbackValue = true
-        self.storage = storage ?? StorageFor(Self.self).wrappedValue
+        let context = Context(
+            key: nil,
+            observationID: nil, // doesn't exist yet
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
+        let storage = storage ?? StorageFor(Self.self).wrappedValue
+
+        self.init(
+            key: state.key(),
+            context: context,
+            fallbackValue: state.initialValue,
+            shouldPreserveFallbackValue: true,
+            storage: storage)
     }
 }

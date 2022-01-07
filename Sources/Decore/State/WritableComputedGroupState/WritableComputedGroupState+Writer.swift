@@ -17,7 +17,7 @@ public extension Storage.Writer {
     /// ```
     ///
     func callAsFunction<WCGS: WritableComputedGroupState>(_ value: WCGS.Element, into container: WCGS.Type, at id: WCGS.ID) {
-        let reader = Storage.Reader(context: context, storage: storage, owner: owner)
+        let reader = Storage.Reader(context: context, storage: storage)
         return WCGS.setValue(value, at: id, read: reader, write: self)
     }
 

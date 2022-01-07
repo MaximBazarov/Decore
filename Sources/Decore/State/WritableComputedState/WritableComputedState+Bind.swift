@@ -13,21 +13,34 @@ extension Bind {
     public init<WCS: WritableComputedState>(
         _ state: WCS.Type,
         storage: Storage? = nil,
-        file: String = #file, fileID: String = #fileID, line: Int = #line,
-        column: Int = #column, function: String = #function
+        file: String = #file,
+        fileID: String = #fileID,
+        line: Int = #line,
+        column: Int = #column,
+        function: String = #function
     )
     where WCS.Value == Value
     {
-        self.context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        key = state.key()
-        depender = state.key()
-        self.storage = storage ?? StorageFor(Self.self).wrappedValue
+        let context = Context(
+            key: state.key(),
+            observationID: nil, // doesn't exist yet
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
+        let storage = storage ?? StorageFor(Self.self).wrappedValue
         let reader = Storage.Reader(
             context: context,
-            storage: self.storage,
-            owner: depender
-        )
-        fallbackValue = { state.value(read: reader) }
-        shouldPreserveFallbackValue = WCS.shouldStoreComputedValue()
+            storage: storage)
+
+        self.init(
+            key: state.key(),
+            context: context,
+            fallbackValue: {
+                state.value(read: reader)
+            },
+            shouldPreserveFallbackValue: WCS.shouldStoreComputedValue(),
+            storage: storage)
     }
 }

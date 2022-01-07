@@ -22,14 +22,22 @@ extension Observe {
     )
     where CG.Value == Value
     {
+        let context = Context(
+            key: nil,
+            observationID: nil, // doesn't exist yet
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
 
-        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
-        self.context = context
-        key = state.key()
-        depender = state.key()
-        shouldPreserveFallbackValue = CG.shouldStoreComputedValue()
         let storage = storage ?? StorageFor(Self.self).wrappedValue
-        fallbackValue = { state.initialValue(context: context, in: storage) }
-        self.storage = storage
+
+        self.init(
+            key: state.key(),
+            context: context,
+            fallbackValue: { state.initialValue(context: context, in: storage) },
+            shouldPreserveFallbackValue: CG.shouldStoreComputedValue(),
+            storage: storage)
     }
 }

@@ -49,9 +49,10 @@ final class WritableComputedGroupState_RWTests: XCTestCase {
     var storage: Storage!
 
     override func setUp() {
+        let testContext = Context.here().appending(key: Sum.key())
         storage = Storage()
-        read = Storage.Reader(context: .here(), storage: storage, owner: Sum.key())
-        write = Storage.Writer(context: .here(), storage: storage, owner: Sum.key())
+        read = Storage.Reader(context: testContext, storage: storage)
+        write = Storage.Writer(context: testContext, storage: storage)
     }
 
     // MARK: - Calculation -

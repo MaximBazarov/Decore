@@ -25,46 +25,27 @@ extension Storage {
             observationStorage[observation.id] = WeakObservation(observation)
         }
 
-        func didChangeValue() {
-            let (toDispose, toNotify) = splitDisposeFromNotify( )
-            toNotify.forEach { id in
-                guard let observation = observationStorage[id]?.value
-                else { return }
-                observation.willChangeValue()
-            }
-            toDispose.forEach { id in
-                observationStorage.removeValue(forKey: id)
-            }
-        }
-
-        func willChangeValue() {
-            let (toDispose, toNotify) = splitDisposeFromNotify( )
-            toNotify.forEach { id in
-                guard let observation = observationStorage[id]?.value
-                else { return }
-                observation.willChangeValue()
-            }
-            toDispose.forEach { id in
-                observationStorage.removeValue(forKey: id)
-            }
-        }
-
-        /// Enumerates all the observation inserting them into two sets:
-        /// - The observations to notify
-        /// - The observation to remove from further notifications,
-        /// because they were deallocated.
-        /// - Returns: (toDispose, toNotify) each is of type Set of ``WeakObservation``
-        func splitDisposeFromNotify() -> (Set<ObjectIdentifier>, Set<ObjectIdentifier>) {
-            var toDispose = Set<ObjectIdentifier>()
-            var toNotify = Set<ObjectIdentifier>()
+        /// Returns all observations removing disposed ones.
+        var observations: [ObjectIdentifier: StorageObservation] {
+            var outdatedObservations = Set<ObjectIdentifier>()
+            var validObservations = Set<ObjectIdentifier>()
             observationStorage.forEach { id, weakRef in
                 if weakRef.value == nil {
-                    toDispose.insert(id)
+                    outdatedObservations.insert(id)
                     return
                 }
-                toNotify.insert(id)
+                validObservations.insert(id)
             }
-            return (toDispose, toNotify)
+
+            outdatedObservations.forEach({
+                observationStorage.removeValue(forKey: $0)
+            })
+
+            return validObservations
+                .reduce(into: [ObjectIdentifier: StorageObservation]()) { acc, id in
+                    guard let observation = observationStorage[id]?.value else { return }
+                    acc[id] = observation
+                }
         }
 
 

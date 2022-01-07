@@ -17,28 +17,29 @@ public extension Storage {
     /// where `AtomicState` is the ``ValueContainer`` that extends.
     struct Reader {
 
-        let owner: Storage.Key?
         let context: Context
-
-        var storage: Storage
+        let storage: Storage
 
         /// Initialize a reader that reads the storage adding dependency.
         /// - Parameters:
         ///   - storage: ``Storage`` to read from
         ///   - reader: A key of the ``ValueContainer`` that reads the value
-        public init(context: Context, storage: Storage? = nil, owner: Storage.Key? = nil) {
+        public init(context: Context, storage: Storage) {
             self.context = context
-            self.owner = owner
-            self.storage = storage ?? Warehouse.storage(for: Self.self)
+            self.storage = storage
         }
 
-        func callAsFunction<V>(_ key: Storage.Key, fallbackValue: () -> V) -> V {
-            return storage.readValue(
+        func callAsFunction<V>(
+            _ key: Storage.Key,
+            fallbackValue: () -> V,
+            preserveFallbackValue: Bool
+        ) -> V
+        {
+            storage.readValue(
                 at: key,
+                readerContext: context,
                 fallbackValue: fallbackValue,
-                context: context,
-                depender: owner
-            )
+                persistFallbackValue: preserveFallbackValue)
         }
 
     }

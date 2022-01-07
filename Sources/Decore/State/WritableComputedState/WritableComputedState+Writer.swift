@@ -17,7 +17,7 @@ public extension Storage.Writer {
     /// ```
     ///
     func callAsFunction<WCS: WritableComputedState>(_ value: WCS.Value, into container: WCS.Type) {
-        let reader = Storage.Reader(context: context, storage: storage, owner: owner)
+        let reader = Storage.Reader(context: context, storage: storage)
         return WCS.setValue(value, read: reader, write: self)
     }
 

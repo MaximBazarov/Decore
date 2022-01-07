@@ -23,6 +23,7 @@ private struct EmptyModifier: ViewModifier {
 
 public extension View {
 
+    /// **[WORK IN PROGRESS]**
     /// Presets ``Storage`` for the given `SwiftUI.View`
     /// with values based on ``StatePreset``
     ///
@@ -54,7 +55,14 @@ public extension View {
     ) -> some View
     {
         let wrapper = EmptyModifier()
-        let context = Context(file: file, fileID: fileID, line: line, column: column, function: function)
+        let context = Context(
+            key: nil,
+            observationID: nil,
+            file: file,
+            fileID: fileID,
+            line: line,
+            column: column,
+            function: function)
         let writer = Storage.Writer(context: context, storage: wrapper.storage)
         presetUsing(writer)
         return modifier(wrapper)
