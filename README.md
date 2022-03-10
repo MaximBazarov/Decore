@@ -1,11 +1,5 @@
 # Decore
 
-Work In Progress.
+Work In Progress. I wouldn't recommend using it anywhere but experiments.
 
-Build documentation using Xcode "Product/Build Documentation"
-
-**Or**
-
-1. [download a snapshot here](https://github.com/MaximBazarov/Decore/raw/main/docs/Decore.doccarchive.zip) 
-2. Unarchive (doubleclick)
-3. Open with Xcode (doubleclick)
+Project is archived, I will post a new version link here once I'm ready, but I wouldn't expect it to arive soon. Sadly, currently I can't prioritize this project enough, also it didn't get much traction, so hence the decision to archive it.
