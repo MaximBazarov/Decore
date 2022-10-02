@@ -1,5 +1,14 @@
 # Decore
 
-Work In Progress. I wouldn't recommend using it anywhere but experiments.
+Swift applications architecture **framework**, providing a set of abstractions to compose 
+your data layer, dependencies, and side-effects using automaticaly calculated dependency graph.
 
-Project is archived, I will post a new version link here once I'm ready, but I wouldn't expect it to arive soon. Sadly, currently I can't prioritize this project enough, also it didn't get much traction, so hence the decision to archive it.
+**Decore library** provides all the types and protocols to enable the framework in your app.
+ 
+**WORK IN PROGRESS**
+Current version is in active development stage.
+**Please only use it in your experiments only**, the library and components is not yet tested.
+
+All those who still use the old implementation of Decore 
+(which I do not reccommend to use in the apps other than experiments) 
+use the last experimental verion: `0.1.1`
