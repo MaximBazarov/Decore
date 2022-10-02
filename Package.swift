@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Decore",
     platforms: [
-        .macOS(.v10_14),
+        .macOS(.v10_15),
         .iOS(.v15),
         .watchOS(.v7),
         .tvOS(.v14),
@@ -14,7 +14,6 @@ let package = Package(
         .library(name: "Decore", targets: ["Decore"]),
         .library(name: "DependencyAutoGraph", targets: ["DependencyAutoGraph"]),
         .library(name: "DependencyContainer", targets: ["DependencyContainer"]),
-        .library(name: "EffectBus", targets: ["EffectBus"]),
         .library(name: "ObservableStorage", targets: ["ObservableStorage"]),
     ],
     dependencies: [
@@ -23,7 +22,9 @@ let package = Package(
         // Decore -
         .target(
             name: "Decore",
-            dependencies: ["DependencyAutoGraph",],
+            dependencies: [
+                "DependencyContainer",
+            ],
             path: "Decore/Sources"
         ),
         .testTarget(
@@ -52,17 +53,6 @@ let package = Package(
             name: "DependencyContainer-Tests",
             dependencies: ["DependencyContainer"],
             path: "DependencyContainer/Tests"
-        ),
-        // EffectBus -
-        .target(
-            name: "EffectBus",
-            dependencies: [],
-            path: "EffectBus/Sources"
-        ),
-        .testTarget(
-            name: "EffectBus-Tests",
-            dependencies: ["EffectBus"],
-            path: "EffectBus/Tests"
         ),
         // ObservableStorage -
         .target(
