@@ -7,7 +7,7 @@ your data layer, dependencies, and side-effects using automaticaly calculated de
  
 **WORK IN PROGRESS**
 Current version is in active development stage.
-**Please only use it in your experiments only**, the library and components is not yet tested.
+**Please only use it in your experiments**, the library and components are not yet tested.
 
 All those who still use the old implementation of Decore 
 (which I do not reccommend to use in the apps other than experiments) 
