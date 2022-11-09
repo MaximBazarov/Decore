@@ -1,6 +1,6 @@
 # Decore
 
-**ARCHIVED: **
+**ARCHIVED:**
 
 That was a nice attempt, but after the production test, it turns out that state management is not enough, and I need a side-effects management as well.
 
